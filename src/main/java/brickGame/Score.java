@@ -19,26 +19,23 @@ public class Score {
         label.setTranslateX(x);
         label.setTranslateY(y);
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                main.root.getChildren().add(label);
-            }
-        });
+        Platform.runLater(() -> main.root.getChildren().add(label));
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+        new Thread(() -> {
+            try {
                 for (int i = 0; i < 21; i++) {
-                    try {
-                        label.setScaleX(i);
-                        label.setScaleY(i);
-                        label.setOpacity((20 - i) / 20.0);
-                        Thread.sleep(15);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    final int finalI = i;
+                    Platform.runLater(() -> {
+                        label.setScaleX(finalI);
+                        label.setScaleY(finalI);
+                        label.setOpacity((20 - finalI) / 20.0);
+                    });
+                    Thread.sleep(15);
                 }
+                // Remove the label after the animation
+                Platform.runLater(() -> main.root.getChildren().remove(label));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }).start();
     }
