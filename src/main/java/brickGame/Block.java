@@ -80,30 +80,47 @@ public class Block implements Serializable {
     }
 
 
-    public int checkHitToBlock(double xBall, double yBall) {
-
+    public int checkHitToBlock(double xBall, double yBall, double ballRadius) {
         if (isDestroyed) {
             return NO_HIT;
         }
 
-        if (xBall >= x && xBall <= x + width && yBall == y + height) {
-            return HIT_BOTTOM;
-        }
+        double blockRight = x + width;
+        double blockBottom = y + height;
 
-        if (xBall >= x && xBall <= x + width && yBall == y) {
-            return HIT_TOP;
-        }
+        // Calculate the closest point on the block to the ball
+        double closestX = Math.max(x, Math.min(xBall, blockRight));
+        double closestY = Math.max(y, Math.min(yBall, blockBottom));
 
-        if (yBall >= y && yBall <= y + height && xBall == x + width) {
-            return HIT_RIGHT;
-        }
+        // Calculate the distance between the closest point and the ball's center
+        double distanceX = xBall - closestX;
+        double distanceY = yBall - closestY;
+        double distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
-        if (yBall >= y && yBall <= y + height && xBall == x) {
-            return HIT_LEFT;
+        // Check if the distance is less than the ball's radius squared
+        if (distanceSquared < (ballRadius * ballRadius)) {
+            double deltaX = Math.min(Math.abs(xBall - x), Math.abs(xBall - blockRight));
+            double deltaY = Math.min(Math.abs(yBall - y), Math.abs(yBall - blockBottom));
+
+            if (deltaX < deltaY) {
+                if (xBall > x + width / 2) {
+                    return HIT_RIGHT;
+                } else {
+                    return HIT_LEFT;
+                }
+            } else {
+                if (yBall > y + height / 2) {
+                    return HIT_BOTTOM;
+                } else {
+                    return HIT_TOP;
+                }
+            }
         }
 
         return NO_HIT;
     }
+
+
 
     public static int getPaddingTop() {
         return block.paddingTop;
