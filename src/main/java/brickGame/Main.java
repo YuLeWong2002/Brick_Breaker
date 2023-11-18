@@ -22,7 +22,7 @@ import java.util.Random;
 
 public class Main extends Application implements EventHandler<KeyEvent>, GameEngine.OnAction {
 
-
+    private GameInitializer gameInitializer = new GameInitializer();
     private int level = 0;
 
     private double xBreak = 0.0f;
@@ -39,7 +39,6 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
     private static int LEFT  = 1;
     private static int RIGHT = 2;
 
-    private Circle ball;
     private double xBall;
     private double yBall;
 
@@ -106,7 +105,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
                 return;
             }
 
-            initBall();
+
             initBreak();
             initBoard();
 
@@ -127,9 +126,10 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
         heartLabel = new Label("Heart : " + heart);
         heartLabel.setTranslateX(sceneWidth - 70);
         if (loadFromSave == false) {
-            root.getChildren().addAll(rect, ball, scoreLabel, heartLabel, levelLabel, newGame);
+            gameInitializer.initBall();
+            root.getChildren().addAll(rect, gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel, newGame);
         } else {
-            root.getChildren().addAll(rect, ball, scoreLabel, heartLabel, levelLabel);
+            root.getChildren().addAll(rect, gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel);
         }
         for (Block block : blocks) {
             root.getChildren().add(block.rect);
@@ -273,14 +273,14 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
     }
 
 
-    private void initBall() {
-        Random random = new Random();
-        xBall = random.nextInt(sceneWidth) + 1;
-        yBall = random.nextInt(sceneHeight - 200) + ((level + 1) * Block.getHeight()) + 15;
-        ball = new Circle();
-        ball.setRadius(ballRadius);
-        ball.setFill(new ImagePattern(new Image("ball.png")));
-    }
+//    private void initBall() {
+//        Random random = new Random();
+//        xBall = random.nextInt(sceneWidth) + 1;
+//        yBall = random.nextInt(sceneHeight - 200) + ((level + 1) * Block.getHeight()) + 15;
+//        ball = new Circle();
+//        ball.setRadius(ballRadius);
+//        ball.setFill(new ImagePattern(new Image("ball.png")));
+//    }
 
     private void initBreak() {
         rect = new Rectangle();
@@ -639,8 +639,8 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
                 rect.setX(xBreak);
                 rect.setY(yBreak);
-                ball.setCenterX(xBall);
-                ball.setCenterY(yBall);
+                gameInitializer.getBall().setCenterX(xBall);
+                gameInitializer.getBall().setCenterY(yBall);
 
                 for (Bonus choco : choco) {
                     choco.choco.setY(choco.y);
@@ -651,7 +651,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
         if (yBall >= Block.getPaddingTop() && yBall <= (Block.getHeight() * (level + 1)) + Block.getPaddingTop()) {
             for (final Block block : blocks) {
-                int hitCode = block.checkHitToBlock(xBall, yBall);
+                int hitCode = block.checkHitToBlock(xBall, yBall, ballRadius);
                 if (hitCode != Block.NO_HIT) {
                     score += 1;
 
@@ -677,7 +677,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
                     if (block.type == Block.BLOCK_STAR) {
                         goldTime = time;
-                        ball.setFill(new ImagePattern(new Image("goldball.png")));
+                        gameInitializer.getBall().setFill(new ImagePattern(new Image("goldball.png")));
                         System.out.println("gold ball");
                         root.getStyleClass().add("goldRoot");
                         isGoldStatus = true;
@@ -718,7 +718,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
 
         if (time - goldTime > 5000) {
-            ball.setFill(new ImagePattern(new Image("ball.png")));
+            gameInitializer.getBall().setFill(new ImagePattern(new Image("ball.png")));
             root.getStyleClass().remove("goldRoot");
             isGoldStatus = false;
         }
