@@ -1,5 +1,7 @@
 package brickGame;
 
+import javafx.application.Platform;
+
 public class GameEngine {
 
     private OnAction onAction;
@@ -58,7 +60,7 @@ public class GameEngine {
     }
 
     private void initialize() {
-        onAction.onInit();
+        Platform.runLater(() -> onAction.onInit());
     }
 
     public interface OnAction {
