@@ -105,8 +105,8 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
                 return;
             }
 
-
-            initBreak();
+//          initBall();
+//          initBreak();
             initBoard();
 
             load = new Button("Load Game");
@@ -127,9 +127,10 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
         heartLabel.setTranslateX(sceneWidth - 70);
         if (loadFromSave == false) {
             gameInitializer.initBall();
-            root.getChildren().addAll(rect, gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel, newGame);
+            gameInitializer.initBreak();
+            root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel, newGame);
         } else {
-            root.getChildren().addAll(rect, gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel);
+            root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel);
         }
         for (Block block : blocks) {
             root.getChildren().add(block.rect);
@@ -282,17 +283,17 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 //        ball.setFill(new ImagePattern(new Image("ball.png")));
 //    }
 
-    private void initBreak() {
-        rect = new Rectangle();
-        rect.setWidth(breakWidth);
-        rect.setHeight(breakHeight);
-        rect.setX(xBreak);
-        rect.setY(yBreak);
-
-        ImagePattern pattern = new ImagePattern(new Image("block.jpg"));
-
-        rect.setFill(pattern);
-    }
+//    private void initBreak() {
+//        rect = new Rectangle();
+//        rect.setWidth(breakWidth);
+//        rect.setHeight(breakHeight);
+//        rect.setX(xBreak);
+//        rect.setY(yBreak);
+//
+//        ImagePattern pattern = new ImagePattern(new Image("block.jpg"));
+//
+//        rect.setFill(pattern);
+//    }
 
     private boolean goDownBall                  = true;
     private boolean goRightBall                 = true;
@@ -637,8 +638,8 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
                 scoreLabel.setText("Score: " + score);
                 heartLabel.setText("Heart : " + heart);
 
-                rect.setX(xBreak);
-                rect.setY(yBreak);
+                gameInitializer.getRect().setX(xBreak);
+                gameInitializer.getRect().setY(yBreak);
                 gameInitializer.getBall().setCenterX(xBall);
                 gameInitializer.getBall().setCenterY(yBall);
 
