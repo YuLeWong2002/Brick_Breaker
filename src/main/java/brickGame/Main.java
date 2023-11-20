@@ -62,7 +62,6 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
     public static String savePath    = "D:/save/save.mdds";
     public static String savePathDir = "D:/save/";
 
-    private ArrayList<Block> blocks = new ArrayList<Block>();
     private ArrayList<Bonus> choco = new ArrayList<Bonus>();
     private Color[]          colors = new Color[]{
             Color.MAGENTA,
@@ -105,9 +104,9 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
                 return;
             }
 
-//          initBall();
-//          initBreak();
-            initBoard();
+            gameInitializer.initBall();
+            gameInitializer.initBreak();
+            gameInitializer.initBoard();
 
             load = new Button("Load Game");
             newGame = new Button("Start New Game");
@@ -126,13 +125,13 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
         heartLabel = new Label("Heart : " + heart);
         heartLabel.setTranslateX(sceneWidth - 70);
         if (loadFromSave == false) {
-            gameInitializer.initBall();
-            gameInitializer.initBreak();
+//            gameInitializer.initBall();
+//            gameInitializer.initBreak();
             root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel, newGame);
         } else {
             root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel);
         }
-        for (Block block : blocks) {
+        for (Block block : gameInitializer.getBlocks()) {
             root.getChildren().add(block.rect);
         }
         Scene scene = new Scene(root, sceneWidth, sceneHeight);
@@ -185,35 +184,6 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
 
     }
-
-    private void initBoard() {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < level + 1; j++) {
-                int r = new Random().nextInt(500);
-                if (r % 5 == 0) {
-                    continue;
-                }
-                int type;
-                if (r % 10 == 1) {
-                    type = Block.BLOCK_CHOCO;
-                } else if (r % 10 == 2) {
-                    if (!isExistHeartBlock) {
-                        type = Block.BLOCK_HEART;
-                        isExistHeartBlock = true;
-                    } else {
-                        type = Block.BLOCK_NORMAL;
-                    }
-                } else if (r % 10 == 3) {
-                    type = Block.BLOCK_STAR;
-                } else {
-                    type = Block.BLOCK_NORMAL;
-                }
-                blocks.add(new Block(j, i, colors[r % (colors.length)], type));
-                //System.out.println("colors " + r % (colors.length));
-            }
-        }
-    }
-
 
     public static void main(String[] args) {
         launch(args);
@@ -272,28 +242,6 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
 
     }
-
-
-//    private void initBall() {
-//        Random random = new Random();
-//        xBall = random.nextInt(sceneWidth) + 1;
-//        yBall = random.nextInt(sceneHeight - 200) + ((level + 1) * Block.getHeight()) + 15;
-//        ball = new Circle();
-//        ball.setRadius(ballRadius);
-//        ball.setFill(new ImagePattern(new Image("ball.png")));
-//    }
-
-//    private void initBreak() {
-//        rect = new Rectangle();
-//        rect.setWidth(breakWidth);
-//        rect.setHeight(breakHeight);
-//        rect.setX(xBreak);
-//        rect.setY(yBreak);
-//
-//        ImagePattern pattern = new ImagePattern(new Image("block.jpg"));
-//
-//        rect.setFill(pattern);
-//    }
 
     private boolean goDownBall                  = true;
     private boolean goRightBall                 = true;
@@ -443,7 +391,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
 
     private void checkDestroyedCount() {
-        if (destroyedBlockCount == blocks.size()) {
+        if (destroyedBlockCount == gameInitializer.getBlocks().size()) {
             //TODO win level todo...
             //System.out.println("You Win");
 
@@ -491,7 +439,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
                     outputStream.writeBoolean(collideToTopBlock);
 
                     ArrayList<BlockSerializable> blockSerializable = new ArrayList<BlockSerializable>();
-                    for (Block block : blocks) {
+                    for (Block block : gameInitializer.getBlocks()) {
                         if (block.isDestroyed) {
                             continue;
                         }
@@ -551,12 +499,12 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
         goldTime = loadSave.goldTime;
         vX = loadSave.vX;
 
-        blocks.clear();
+        gameInitializer.getBlocks().clear();
         choco.clear();
 
         for (BlockSerializable ser : loadSave.blocks) {
             int r = new Random().nextInt(200);
-            blocks.add(new Block(ser.row, ser.j, colors[r % colors.length], ser.type));
+            gameInitializer.getBlocks().add(new Block(ser.row, ser.j, colors[r % colors.length], ser.type));
         }
 
 
@@ -590,7 +538,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
                     goldTime = 0;
 
                     engine.stop();
-                    blocks.clear();
+                    gameInitializer.getBlocks().clear();
                     choco.clear();
                     destroyedBlockCount = 0;
                     start(primaryStage);
@@ -619,7 +567,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
             time = 0;
             goldTime = 0;
 
-            blocks.clear();
+            gameInitializer.getBlocks().clear();
             choco.clear();
 
             start(primaryStage);
@@ -651,7 +599,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
 
         if (yBall >= Block.getPaddingTop() && yBall <= (Block.getHeight() * (level + 1)) + Block.getPaddingTop()) {
-            for (final Block block : blocks) {
+            for (final Block block : gameInitializer.getBlocks()) {
                 int hitCode = block.checkHitToBlock(xBall, yBall, ballRadius);
                 if (hitCode != Block.NO_HIT) {
                     score += 1;
