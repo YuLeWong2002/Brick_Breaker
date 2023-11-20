@@ -22,9 +22,8 @@ import java.util.Random;
 
 public class Main extends Application implements EventHandler<KeyEvent>, GameEngine.OnAction {
 
-    private GameInitializer gameInitializer = new GameInitializer();
-    private int level = 0;
-
+    private GameInitializer gameInitializer = new GameInitializer(this);
+    int level = 0;
     private double xBreak = 0.0f;
     private double centerBreakX;
     private double yBreak = 640.0f;
@@ -95,15 +94,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
 
         if (loadFromSave == false) {
-            level++;
-            if (level >1){
-                new Score().showMessage("Level Up :)", this);
-            }
-            if (level == 18) {
-                new Score().showWin(this);
-                return;
-            }
-
+            gameInitializer.startNewLevel();
             gameInitializer.initBall();
             gameInitializer.initBreak();
             gameInitializer.initBoard();
@@ -120,13 +111,11 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
 
         root = new Pane();
         scoreLabel = new Label("Score: " + score);
-        levelLabel = new Label("Level: " + level);
+        levelLabel = new Label("Level: " + gameInitializer.getLevel());
         levelLabel.setTranslateY(20);
         heartLabel = new Label("Heart : " + heart);
         heartLabel.setTranslateX(sceneWidth - 70);
         if (loadFromSave == false) {
-//            gameInitializer.initBall();
-//            gameInitializer.initBreak();
             root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel, newGame);
         } else {
             root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel);
@@ -143,7 +132,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
         primaryStage.show();
 
         if (loadFromSave == false) {
-            if (level > 1 && level < 18) {
+            if (gameInitializer.getLevel() > 1 && gameInitializer.getLevel() < 18) {
                 load.setVisible(false);
                 newGame.setVisible(false);
                 engine = new GameEngine();
@@ -322,10 +311,10 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
                     //vX = 0;
                     vX = Math.abs(relation);
                 } else if (Math.abs(relation) > 0.3 && Math.abs(relation) <= 0.7) {
-                    vX = (Math.abs(relation) * 1.5) + (level / 3.500);
+                    vX = (Math.abs(relation) * 1.5) + (gameInitializer.getLevel() / 3.500);
                     //System.out.println("vX " + vX);
                 } else {
-                    vX = (Math.abs(relation) * 2) + (level / 3.500);
+                    vX = (Math.abs(relation) * 2) + (gameInitializer.getLevel() / 3.500);
                     //System.out.println("vX " + vX);
                 }
 
@@ -409,7 +398,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
                 try {
                     outputStream = new ObjectOutputStream(new FileOutputStream(file));
 
-                    outputStream.writeInt(level);
+                    outputStream.writeInt(gameInitializer.getLevel());
                     outputStream.writeInt(score);
                     outputStream.writeInt(heart);
                     outputStream.writeInt(destroyedBlockCount);
@@ -598,7 +587,7 @@ public class Main extends Application implements EventHandler<KeyEvent>, GameEng
         });
 
 
-        if (yBall >= Block.getPaddingTop() && yBall <= (Block.getHeight() * (level + 1)) + Block.getPaddingTop()) {
+        if (yBall >= Block.getPaddingTop() && yBall <= (Block.getHeight() * (gameInitializer.getLevel() + 1)) + Block.getPaddingTop()) {
             for (final Block block : gameInitializer.getBlocks()) {
                 int hitCode = block.checkHitToBlock(xBall, yBall, ballRadius);
                 if (hitCode != Block.NO_HIT) {
