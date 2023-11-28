@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 //import sun.plugin2.message.Message;
 
 public class Score {
@@ -19,7 +20,7 @@ public class Score {
         label.setTranslateX(x);
         label.setTranslateY(y);
 
-        Platform.runLater(() -> main.root.getChildren().add(label));
+        Platform.runLater(() -> main.getUiController().getRoot().getChildren().add(label));
 
         new Thread(() -> {
             try {
@@ -33,7 +34,7 @@ public class Score {
                     Thread.sleep(15);
                 }
                 // Remove the label after the animation
-                Platform.runLater(() -> main.root.getChildren().remove(label));
+                Platform.runLater(() -> main.getUiController().getRoot().getChildren().remove(label));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -48,7 +49,7 @@ public class Score {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                main.root.getChildren().add(label);
+                main.getUiController().getRoot().getChildren().add(label);
             }
         });
 
@@ -89,7 +90,7 @@ public class Score {
                     }
                 });
 
-                main.root.getChildren().addAll(label, restart);
+                main.getUiController().getRoot().getChildren().addAll(label, restart);
 
             }
         });
@@ -106,7 +107,7 @@ public class Score {
                 label.setScaleY(2);
 
 
-                main.root.getChildren().addAll(label);
+                main.getUiController().getRoot().getChildren().addAll(label);
 
             }
         });
