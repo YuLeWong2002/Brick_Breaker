@@ -1,14 +1,18 @@
 package brickGame;
 
 import javafx.application.Platform;
+import javafx.event.EventHandler;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
 
 
-public class GameController {
+public class GameController implements EventHandler<KeyEvent> {
     private Main main;
     private UIController uiController;
     private GameInitializer gameInitializer;  // Remove the local instance
@@ -24,6 +28,7 @@ public class GameController {
     private Stage primaryStage;
     private double xBreak = 0.0f;
     private double centerBreakX;
+    public double getCenterBreakX() { return centerBreakX; }
     private double yBreak = 640.0f;
     private boolean goDownBall                  = true;
     private boolean goRightBall                 = true;
@@ -35,6 +40,10 @@ public class GameController {
     private long time     = 0;
     private long goldTime = 0;
     private long hitTime  = 0;
+    private static int LEFT  = 1;
+    private static int RIGHT = 2;
+    public static String savePath    = "D:/save/save.mdds";
+    public static String savePathDir = "D:/save/";
     private boolean collideToBreak               = false;
     private boolean collideToBreakAndMoveToRight = true;
     private boolean collideToRightWall           = false;
@@ -147,6 +156,129 @@ public class GameController {
             }
         });
     }
+
+    @Override
+    public void handle(KeyEvent event) {
+        switch (event.getCode()) {
+            case LEFT:
+                move(LEFT);
+                break;
+            case RIGHT:
+
+                move(RIGHT);
+                break;
+            case DOWN:
+                //setPhysicsToBall();
+                break;
+            case S:
+                saveGame();
+                break;
+        }
+    }
+
+    private void move(final int direction) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int sleepTime = 4;
+                for (int i = 0; i < 30; i++) {
+                    if (gameInitializer.getxBreak() == (uiController.getSceneWidth() - gameInitializer.getBreakWidth()) && direction == RIGHT) {
+                        return;
+                    }
+                    if (gameInitializer.getxBreak() == 0 && direction == LEFT) {
+                        return;
+                    }
+                    if (direction == RIGHT) {
+                        gameInitializer.setxBreak(gameInitializer.getxBreak()+1.0);
+                    } else {
+                        gameInitializer.setxBreak(gameInitializer.getxBreak()-1.0);
+                    }
+                    centerBreakX = gameInitializer.getxBreak() + gameInitializer.getHalfBreakWidth();
+                    System.out.println("BreakX: " + gameInitializer.getxBreak());
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (i >= 20) {
+                        sleepTime = i;
+                    }
+                }
+            }
+        }).start();
+
+
+    }
+
+    private void saveGame() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new File(savePathDir).mkdirs();
+                File file = new File(savePath);
+                ObjectOutputStream outputStream = null;
+                try {
+                    outputStream = new ObjectOutputStream(new FileOutputStream(file));
+
+                    outputStream.writeInt(gameInitializer.getLevel());
+                    outputStream.writeInt(score);
+                    outputStream.writeInt(heart);
+                    outputStream.writeInt(destroyedBlockCount);
+
+
+                    outputStream.writeDouble(gameInitializer.getxBall());
+                    outputStream.writeDouble(gameInitializer.getyBall());
+                    outputStream.writeDouble(gameInitializer.getxBreak());
+                    outputStream.writeDouble(yBreak);
+                    outputStream.writeDouble(centerBreakX);
+                    outputStream.writeLong(time);
+                    outputStream.writeLong(goldTime);
+                    outputStream.writeDouble(vX);
+
+
+                    outputStream.writeBoolean(isExistHeartBlock);
+                    outputStream.writeBoolean(isGoldStatus);
+                    outputStream.writeBoolean(goDownBall);
+                    outputStream.writeBoolean(goRightBall);
+                    outputStream.writeBoolean(collideToBreak);
+                    outputStream.writeBoolean(collideToBreakAndMoveToRight);
+                    outputStream.writeBoolean(collideToRightWall);
+                    outputStream.writeBoolean(collideToLeftWall);
+                    outputStream.writeBoolean(collideToRightBlock);
+                    outputStream.writeBoolean(collideToBottomBlock);
+                    outputStream.writeBoolean(collideToLeftBlock);
+                    outputStream.writeBoolean(collideToTopBlock);
+
+                    ArrayList<BlockSerializable> blockSerializable = new ArrayList<BlockSerializable>();
+                    for (Block block : gameInitializer.getBlocks()) {
+                        if (block.isDestroyed) {
+                            continue;
+                        }
+                        blockSerializable.add(new BlockSerializable(block.row, block.column, block.type));
+                    }
+
+                    outputStream.writeObject(blockSerializable);
+
+                    new Score().showMessage("Game Saved", main);
+
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        outputStream.flush();
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
+    }
+
 
     public int getDestroyedBlockCount() { return destroyedBlockCount; }
 

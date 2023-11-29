@@ -2,31 +2,23 @@
 
     import javafx.application.Application;
     import javafx.application.Platform;
-    import javafx.event.EventHandler;
     import javafx.scene.image.Image;
-    import javafx.scene.input.KeyEvent;
-    import javafx.scene.layout.Pane;
     import javafx.scene.paint.ImagePattern;
     import javafx.stage.Stage;
 
-    import java.io.*;
     import java.util.ArrayList;
 
-    public class Main extends Application implements EventHandler<KeyEvent>, GameEngine.OnAction {
+    public class Main extends Application implements GameEngine.OnAction {
 
         private GameInitializer gameInitializer;
         private UIController uiController;
         public UIController getUiController() { return uiController; }
         private GameController gameController;
-        private double centerBreakX;
         private double yBreak = 640.0f;
         private int breakWidth     = 130;
         private int breakHeight    = 30;
-        private int halfBreakWidth = breakWidth / 2;
         private int sceneWidth = 500;
         private int sceneHeight = 700;
-        private static int LEFT  = 1;
-        private static int RIGHT = 2;
         private boolean isGoldStatus      = false;
         private boolean isExistHeartBlock = false;
         private int       ballRadius = 10;
@@ -48,64 +40,11 @@
             gameInitializer = uiController.getGameInitializer();
             gameController = uiController.getGameController();
             uiController.initializeUI();
-            //System.out.println("Start: " + gameInitializer.getBlocks());
         }
 
         public static void main(String[] args) { launch(args); }
 
-        @Override
-        public void handle(KeyEvent event) {
-            switch (event.getCode()) {
-                case LEFT:
-                    move(LEFT);
-                    break;
-                case RIGHT:
-
-                    move(RIGHT);
-                    break;
-                case DOWN:
-                    //setPhysicsToBall();
-                    break;
-                case S:
-                    saveGame();
-                    break;
-            }
-        }
-
         float oldXBreak;
-
-        private void move(final int direction) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    int sleepTime = 4;
-                    for (int i = 0; i < 30; i++) {
-                        if (gameInitializer.getxBreak() == (sceneWidth - breakWidth) && direction == RIGHT) {
-                            return;
-                        }
-                        if (gameInitializer.getxBreak() == 0 && direction == LEFT) {
-                            return;
-                        }
-                        if (direction == RIGHT) {
-                            gameInitializer.setxBreak(gameInitializer.getxBreak()+1.0);
-                        } else {
-                            gameInitializer.setxBreak(gameInitializer.getxBreak()-1.0);
-                        }
-                        centerBreakX = gameInitializer.getxBreak() + halfBreakWidth;
-                        try {
-                            Thread.sleep(sleepTime);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        if (i >= 20) {
-                            sleepTime = i;
-                        }
-                    }
-                }
-            }).start();
-
-
-        }
 
         private boolean goDownBall                  = true;
         private boolean goRightBall                 = true;
@@ -179,7 +118,7 @@
                     collideToBreak = true;
                     goDownBall = false;
 
-                    double relation = (gameInitializer.getxBall() - centerBreakX) / (breakWidth / 2);
+                    double relation = (gameInitializer.getxBall() - gameController.getCenterBreakX()) / (breakWidth / 2);
 
                     if (Math.abs(relation) <= 0.3) {
                         //vX = 0;
@@ -192,7 +131,7 @@
                         //System.out.println("vX " + vX);
                     }
 
-                    if (gameInitializer.getxBall() - centerBreakX > 0) {
+                    if (gameInitializer.getxBall() - gameController.getCenterBreakX() > 0) {
                         collideToBreakAndMoveToRight = true;
                     } else {
                         collideToBreakAndMoveToRight = false;
@@ -261,77 +200,6 @@
                 gameController.nextLevel();
             }
         }
-
-        private void saveGame() {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    new File(savePathDir).mkdirs();
-                    File file = new File(savePath);
-                    ObjectOutputStream outputStream = null;
-                    try {
-                        outputStream = new ObjectOutputStream(new FileOutputStream(file));
-
-                        outputStream.writeInt(gameInitializer.getLevel());
-                        outputStream.writeInt(gameController.getScore());
-                        outputStream.writeInt(gameController.getHeart());
-                        outputStream.writeInt(gameController.getDestroyedBlockCount());
-
-
-                        outputStream.writeDouble(gameInitializer.getxBall());
-                        outputStream.writeDouble(gameInitializer.getyBall());
-                        outputStream.writeDouble(gameInitializer.getxBreak());
-                        outputStream.writeDouble(yBreak);
-                        outputStream.writeDouble(centerBreakX);
-                        outputStream.writeLong(time);
-                        outputStream.writeLong(goldTime);
-                        outputStream.writeDouble(vX);
-
-
-                        outputStream.writeBoolean(isExistHeartBlock);
-                        outputStream.writeBoolean(isGoldStatus);
-                        outputStream.writeBoolean(goDownBall);
-                        outputStream.writeBoolean(goRightBall);
-                        outputStream.writeBoolean(collideToBreak);
-                        outputStream.writeBoolean(collideToBreakAndMoveToRight);
-                        outputStream.writeBoolean(collideToRightWall);
-                        outputStream.writeBoolean(collideToLeftWall);
-                        outputStream.writeBoolean(collideToRightBlock);
-                        outputStream.writeBoolean(collideToBottomBlock);
-                        outputStream.writeBoolean(collideToLeftBlock);
-                        outputStream.writeBoolean(collideToTopBlock);
-
-                        ArrayList<BlockSerializable> blockSerializable = new ArrayList<BlockSerializable>();
-                        for (Block block : gameInitializer.getBlocks()) {
-                            if (block.isDestroyed) {
-                                continue;
-                            }
-                            blockSerializable.add(new BlockSerializable(block.row, block.column, block.type));
-                        }
-
-                        outputStream.writeObject(blockSerializable);
-
-                        new Score().showMessage("Game Saved", Main.this);
-
-
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            outputStream.flush();
-                            outputStream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).start();
-
-        }
-
-
 
         public void restartGame() {
 

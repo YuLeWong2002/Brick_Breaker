@@ -21,6 +21,9 @@ public class GameInitializer {
     private double xBreak = 0.0f;
     private double yBreak = 640.0f;
     private int breakWidth = 130;
+    public int getBreakWidth() { return breakWidth; }
+    private int halfBreakWidth = breakWidth / 2;
+    public int getHalfBreakWidth() { return halfBreakWidth; }
     private int breakHeight = 30;
     private boolean isExistHeartBlock = false;
     private boolean loadFromSave = false;

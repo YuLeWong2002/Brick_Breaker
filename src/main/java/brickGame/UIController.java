@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 public class UIController {
     private Main main;
-    private GameController gamecontroller;
+    private GameController gameController;
     private GameInitializer gameInitializer;
     public UIController(Main main, Stage primaryStage) {
         this.main = main;
@@ -20,7 +20,7 @@ public class UIController {
         } else {System.out.println("UINot null");}
     }
     public GameInitializer getGameInitializer() { return this.gameInitializer; }
-    public GameController getGameController() { return this.gamecontroller; }
+    public GameController getGameController() { return this.gameController; }
     private Stage primaryStage;
     private Button load;
     private Button newGame;
@@ -30,11 +30,13 @@ public class UIController {
     private Label            heartLabel;
     private Label            levelLabel;
     private int sceneWidth = 500;
+    public int getSceneWidth() { return sceneWidth; }
     private int sceneHeight = 700;
+    public int getSceneHeight() { return sceneHeight; }
     public void initGame() {
         if (gameInitializer == null) {
             gameInitializer = new GameInitializer(main);
-            gamecontroller = new GameController(main, this, primaryStage, gameInitializer);
+            gameController = new GameController(main, this, primaryStage, gameInitializer);
         }
     }
     public void initializeUI() {
@@ -54,10 +56,10 @@ public class UIController {
         }
 
         root = new Pane();
-        scoreLabel = new Label("Score: " + gamecontroller.getScore());
+        scoreLabel = new Label("Score: " + gameController.getScore());
         levelLabel = new Label("Level: " + gameInitializer.getLevel());
         levelLabel.setTranslateY(20);
-        heartLabel = new Label("Heart : " + gamecontroller.getHeart());
+        heartLabel = new Label("Heart : " + gameController.getHeart());
         heartLabel.setTranslateX(sceneWidth - 70);
         if (gameInitializer.getLoadFromSave() == false) {
             root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel, newGame, load);
@@ -70,7 +72,7 @@ public class UIController {
         }
         Scene scene = new Scene(root, sceneWidth, sceneHeight);
         scene.getStylesheets().add("style.css");
-        scene.setOnKeyPressed(main);
+        scene.setOnKeyPressed(gameController);
 
         // Set up the primary stage
         primaryStage.setTitle("Game");
@@ -87,7 +89,7 @@ public class UIController {
             load.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    gamecontroller.loadGame();
+                    gameController.loadGame();
 
                     load.setVisible(false);
                     newGame.setVisible(false);
