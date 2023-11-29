@@ -40,15 +40,33 @@ public class GameInitializer {
             Color.TOMATO,
             Color.TAN,
     };
-    private Main mainInstance;
+    private Main main;
+    private GameEngine engine;
+//    public void setMain(Main main) { this.main = main; }
+//
+//    public Main getMain() {
+//        return main;
+//    }
 
-    public GameInitializer(Main mainInstance) {
-        this.mainInstance = mainInstance;
+    public GameInitializer(Main main) {
+        this.main = main;
+//        setMain(getMain());
+//        this.main = getMain();
+        if(main == null) {
+            System.out.println("Constructor Init main is null");
+        } else {System.out.println("GameInitNot null");}
     }
-
     public Circle getBall() {
         return ball;
     }
+    public double getxBall() { return xBall; }
+    public void setxBall(double x) {xBall = x; }
+    public void setyBall(double y) {yBall = y; }
+    public double getyBall() { return yBall; }
+    public double getxBreak() { return xBreak; }
+    public void setxBreak(double count) { xBreak = count; }
+    public boolean getLoadFromSave() { return loadFromSave; }
+    public void setLoadFromSave(boolean load) { loadFromSave = load; }
 
     public void initBall() {
         Random random = new Random();
@@ -57,10 +75,6 @@ public class GameInitializer {
         ball = new Circle();
         ball.setRadius(ballRadius);
         ball.setFill(new ImagePattern(new Image("ball.png")));
-    }
-
-    public Rectangle getRect() {
-        return rect;
     }
 
     public void initBreak() {
@@ -75,6 +89,9 @@ public class GameInitializer {
         rect.setFill(pattern);
     }
 
+    public Rectangle getRect() {
+        return rect;
+    }
     public ArrayList<Block> getBlocks() {
         return blocks;
     }
@@ -103,20 +120,46 @@ public class GameInitializer {
                 }
                 blocks.add(new Block(j, i, colors[r % (colors.length)], type));
                 //System.out.println("colors " + r % (colors.length));
+                System.out.println(blocks.size()+"Yoo");
             }
         }
     }
 
-    public int getLevel() { return level; }
-
-    public void startNewLevel() {
-        level++;
-        if (level > 1) {
-            new Score().showMessage("Level Up :)", mainInstance);
+    public void initializeEngine(GameEngine.OnAction onAction) {
+        if (engine != null) {
+            // Stop the existing engine if it's running
+            engine.stop();
         }
-        if (level == 18) {
-            new Score().showWin(mainInstance);
-            return;
+        engine = new GameEngine();
+        engine.setOnAction(onAction);
+        System.out.println("test");
+        engine.setFps(120);
+        engine.start();
+        System.out.println("Blocks in initializeEngine"+getBlocks());
+    }
+
+    public void stopEngine() {
+        if (engine != null) {
+            engine.stop();
+        }
+    }
+
+    public int getLevel() { return level; }
+    public void setLevel(int count) { level = count; }
+
+    public void startLevel() {
+        if (level > 1 && level < 18) {
+            if(main == null) {
+                System.out.println("main is null");
+            } else {System.out.println("Not null");}
+            initializeEngine(main);
+
+        } else{
+            engine = new GameEngine();
+            engine.setOnAction(main);
+            engine.setFps(120);
+            engine.start();
+            loadFromSave = false;
         }
     }
 }

@@ -11,10 +11,12 @@ import java.util.Random;
 public class GameController {
     private Main main;
     private UIController uiController;
-    public GameController(Main main, UIController uiController, Stage primaryStage) {
+    private GameInitializer gameInitializer;  // Remove the local instance
+    public GameController(Main main, UIController uiController, Stage primaryStage, GameInitializer gameInitializer) {
         this.main = main;
         this.uiController = uiController;
         this.primaryStage = primaryStage;
+        this.gameInitializer = gameInitializer;
         if(main == null) {
             System.out.println("GameCmain is null");
         } else {System.out.println("GameCNot null");}
@@ -42,7 +44,7 @@ public class GameController {
     private boolean collideToLeftBlock           = false;
     private boolean collideToTopBlock            = false;
     private double vX = 1.000;
-    GameInitializer gameInitializer = new GameInitializer(main);
+//    GameInitializer gameInitializer = new GameInitializer(main);
 //    GameInitializer gameInitializer = uiController.getGameInitializer();
     private ArrayList<Bonus> choco = new ArrayList<Bonus>();
     private Color[]          colors = new Color[]{

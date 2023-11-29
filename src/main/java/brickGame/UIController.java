@@ -10,6 +10,8 @@ import javafx.stage.Stage;
 
 public class UIController {
     private Main main;
+    private GameController gamecontroller;
+    private GameInitializer gameInitializer;
     public UIController(Main main, Stage primaryStage) {
         this.main = main;
         this.primaryStage = primaryStage;
@@ -17,8 +19,8 @@ public class UIController {
             System.out.println("UImain is null");
         } else {System.out.println("UINot null");}
     }
-    public GameInitializer getGameInitializer() { return gameInitializer; }
-    public GameController getGameController() { return gamecontroller; }
+    public GameInitializer getGameInitializer() { return this.gameInitializer; }
+    public GameController getGameController() { return this.gamecontroller; }
     private Stage primaryStage;
     private Button load;
     private Button newGame;
@@ -29,12 +31,16 @@ public class UIController {
     private Label            levelLabel;
     private int sceneWidth = 500;
     private int sceneHeight = 700;
-    GameController gamecontroller = new GameController(main, this, primaryStage);
-    GameInitializer gameInitializer = new GameInitializer(main);
+    public void initGame() {
+        if (gameInitializer == null) {
+            gameInitializer = new GameInitializer(main);
+            gamecontroller = new GameController(main, this, primaryStage, gameInitializer);
+        }
+    }
     public void initializeUI() {
-
         if (gameInitializer.getLoadFromSave() == false) {
-            gameInitializer.showNewLevel();
+            showNewLevel();
+            System.out.println("Level: " + gameInitializer.getLevel());
             gameInitializer.initBall();
             gameInitializer.initBreak();
             gameInitializer.initBoard();
@@ -108,6 +114,18 @@ public class UIController {
     } catch (Exception e) {
         e.printStackTrace(); // Handle the exception as needed
     } }
+
+    public void showNewLevel() {
+        System.out.println("Current Level: " + gameInitializer.getLevel());
+        gameInitializer.setLevel(gameInitializer.getLevel() + 1);
+        System.out.println("New Level: " + gameInitializer.getLevel());
+        if (gameInitializer.getLevel() > 1) {
+            new Score().showMessage("Level Up :)", main);
+        }
+        if (gameInitializer.getLevel() == 18) {
+            new Score().showWin(main);
+        }
+    }
 
     private Button createButton(String text, double translateX, double translateY) {
         Button button = new Button(text);

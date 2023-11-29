@@ -12,6 +12,7 @@ public class GameEngine {
 
     public void setOnAction(OnAction onAction) {
         this.onAction = onAction;
+        System.out.println("Game engine");
     }
 
     /**

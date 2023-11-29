@@ -137,5 +137,4 @@ public class Block implements Serializable {
     public static int getWidth() {
         return block.width;
     }
-
 }
