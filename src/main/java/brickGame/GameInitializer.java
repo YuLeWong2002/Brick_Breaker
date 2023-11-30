@@ -15,6 +15,7 @@ public class GameInitializer {
     private int sceneHeight = 700;
     private Circle ball;
     private int ballRadius = 10;
+    public int getBallRadius() { return ballRadius; }
     private double xBall;
     private double yBall;
     private Rectangle rect;
@@ -25,6 +26,7 @@ public class GameInitializer {
     private int halfBreakWidth = breakWidth / 2;
     public int getHalfBreakWidth() { return halfBreakWidth; }
     private int breakHeight = 30;
+    public int getBreakHeight() { return breakHeight; }
     private boolean isExistHeartBlock = false;
     private boolean loadFromSave = false;
     private ArrayList<Block> blocks = new ArrayList<Block>();
@@ -155,11 +157,11 @@ public class GameInitializer {
             if(main == null) {
                 System.out.println("main is null");
             } else {System.out.println("Not null");}
-            initializeEngine(main);
+            initializeEngine(main.getUiController().getGameController());
 
         } else{
             engine = new GameEngine();
-            engine.setOnAction(main);
+            engine.setOnAction(main.getUiController().getGameController());
             engine.setFps(120);
             engine.start();
             loadFromSave = false;

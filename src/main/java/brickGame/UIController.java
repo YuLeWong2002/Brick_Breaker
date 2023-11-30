@@ -66,7 +66,6 @@ public class UIController {
         } else {
             root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel);
         }
-        System.out.println("WTH"+gameInitializer.getBlocks());
         for (Block block : gameInitializer.getBlocks()) {
             root.getChildren().add(block.rect);
         }
@@ -99,14 +98,14 @@ public class UIController {
             newGame.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    gameInitializer.initializeEngine(main);
+                    gameInitializer.initializeEngine(gameController);
                     load.setVisible(false);
                     newGame.setVisible(false);
                     System.out.println("BLOCKSNUMINBUTTON: " + gameInitializer.getBlocks());
                 }
             });
         } else {
-            gameInitializer.initializeEngine(main);
+            gameInitializer.initializeEngine(gameController);
             gameInitializer.setLoadFromSave(false);
         }
 

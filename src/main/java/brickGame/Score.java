@@ -71,6 +71,7 @@ public class Score {
     }
 
     public void showGameOver(final Main main) {
+        GameController gameController = main.getUiController().getGameController();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -86,7 +87,7 @@ public class Score {
                 restart.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        main.restartGame();
+                        gameController.restartGame();
                     }
                 });
 
