@@ -2,8 +2,11 @@ package brickGame;
 
 import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.stage.Stage;
@@ -15,19 +18,32 @@ import java.util.Random;
 
 
 public class GameController implements EventHandler<KeyEvent>, GameEngine.OnAction {
-    private final Main main;
-    private final UIController uiController;
-    private final GameInitializer gameInitializer;  // Remove the local instance
-    public GameController(Main main, UIController uiController, Stage primaryStage, GameInitializer gameInitializer) {
-        this.main = main;
-        this.uiController = uiController;
-        this.primaryStage = primaryStage;
-        this.gameInitializer = gameInitializer;
-        if(main == null) {
-            System.out.println("GameCmain is null");
-        } else {System.out.println("GameCNot null");}
+    @FXML
+    private Pane root;
+    @FXML
+    public Label scoreLabel;
+    @FXML
+    public Label heartLabel;
+    @FXML
+    public Label levelLabel;
+
+    public Pane getRoot() {
+        return root;
     }
-    private final Stage primaryStage;
+
+    private Main main;
+    private UIController uiController = Main.getUiController();
+    private GameInitializer gameInitializer = Main.getGameInitializer();
+    public GameController() {
+        // Initialization code if needed
+    }
+    public GameController(Main main, Stage primaryStage) {
+        this.main = main;
+        if(main == null) {
+            System.out.println("GameC main is null");
+        } else {System.out.println("GameC Not null");}
+    }
+
     private double xBreak = 0.0f;
     private double centerBreakX;
     public double getCenterBreakX() { return centerBreakX; }
@@ -37,8 +53,8 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
     private boolean isGoldStatus      = false;
     private boolean isExistHeartBlock = false;
     private int destroyedBlockCount = 0;
-    private int  heart    = 3;
-    private int  score    = 0;
+    private static int  heart    = 3;
+    private static int  score    = 0;
     private long time     = 0;
     private long goldTime = 0;
     private long hitTime  = 0;
@@ -128,33 +144,30 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
     }
 
     public void nextLevel() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    vX = 1.000;
+        Platform.runLater(() -> {
+            try {
+                vX = 1.000;
 
-                    gameInitializer.stopEngine();
-                    resetCollideFlags();
-                    goDownBall = true;
+                gameInitializer.stopEngine();
+                resetCollideFlags();
+                goDownBall = true;
 
-                    isGoldStatus = false;
-                    isExistHeartBlock = false;
+                isGoldStatus = false;
+                isExistHeartBlock = false;
 
 
-                    hitTime = 0;
-                    time = 0;
-                    goldTime = 0;
+                hitTime = 0;
+                time = 0;
+                goldTime = 0;
 
-                    gameInitializer.stopEngine();
-                    gameInitializer.getBlocks().clear();
-                    choco.clear();
-                    destroyedBlockCount = 0;
-                    uiController.startGame();
+                gameInitializer.stopEngine();
+                gameInitializer.getBlocks().clear();
+                choco.clear();
+                destroyedBlockCount = 0;
+                uiController.initializeUI();
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
@@ -185,18 +198,26 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
                 int sleepTime = 4;
                 for (int i = 0; i < 30; i++) {
                     if (gameInitializer.getxBreak() == (uiController.getSceneWidth() - gameInitializer.getBreakWidth()) && direction == RIGHT) {
+                        System.out.println("Scene width: "+ uiController.getSceneWidth());
+                        System.out.println("Break width: "+ gameInitializer.getBreakWidth());
+                        System.out.println("xBreak: " + gameInitializer.getxBreak());
                         return;
                     }
                     if (gameInitializer.getxBreak() == 0 && direction == LEFT) {
                         return;
                     }
-                    if (direction == RIGHT) {
-                        gameInitializer.setxBreak(gameInitializer.getxBreak()+1.0);
-                    } else {
-                        gameInitializer.setxBreak(gameInitializer.getxBreak()-1.0);
-                    }
-                    centerBreakX = gameInitializer.getxBreak() + gameInitializer.getHalfBreakWidth();
-                    System.out.println("BreakX: " + gameInitializer.getxBreak());
+
+                    // Update UI on JavaFX Application Thread
+                    Platform.runLater(() -> {
+                        if (direction == RIGHT) {
+                            gameInitializer.setxBreak(gameInitializer.getxBreak() + 1.0);
+                        } else {
+                            gameInitializer.setxBreak(gameInitializer.getxBreak() - 1.0);
+                        }
+                        centerBreakX = gameInitializer.getxBreak() + gameInitializer.getHalfBreakWidth();
+                        System.out.println("BreakX: " + gameInitializer.getxBreak());
+                    });
+
                     try {
                         Thread.sleep(sleepTime);
                     } catch (InterruptedException e) {
@@ -208,9 +229,9 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
                 }
             }
         }).start();
-
-
     }
+
+
 
     private void saveGame() {
         new Thread(new Runnable() {
@@ -453,21 +474,18 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
 
     @Override
     public void onUpdate() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
+        Platform.runLater(() -> {
 
-                uiController.getScoreLabel().setText("Score: " + score);
-                uiController.getHeartLabel().setText("Heart : " + heart);
+            scoreLabel.setText("Score: " + score);
+            heartLabel.setText("Heart: " + heart);
 
-                gameInitializer.getRect().setX(gameInitializer.getxBreak());
-                gameInitializer.getRect().setY(yBreak);
-                gameInitializer.getBall().setCenterX(gameInitializer.getxBall());
-                gameInitializer.getBall().setCenterY(gameInitializer.getyBall());
+            gameInitializer.getRect().setX(gameInitializer.getxBreak());
+            gameInitializer.getRect().setY(yBreak);
+            gameInitializer.getBall().setCenterX(gameInitializer.getxBall());
+            gameInitializer.getBall().setCenterY(gameInitializer.getyBall());
 
-                for (Bonus choco : choco) {
-                    choco.choco.setY(choco.y);
-                }
+            for (Bonus choco : choco) {
+                choco.choco.setY(choco.y);
             }
         });
 
@@ -487,12 +505,7 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
                     if (block.type == Block.BLOCK_CHOCO) {
                         final Bonus choco = new Bonus(block.row, block.column);
                         choco.timeCreated = time;
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                uiController.getRoot().getChildren().add(choco.choco);
-                            }
-                        });
+                        Platform.runLater(() -> root.getChildren().add(choco.choco));
                         this.choco.add(choco);
                     }
 
@@ -500,7 +513,7 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
                         goldTime = time;
                         gameInitializer.getBall().setFill(new ImagePattern(new Image("goldball.png")));
                         System.out.println("gold ball");
-                        uiController.getRoot().getStyleClass().add("goldRoot");
+                        root.getStyleClass().add("goldRoot");
                         isGoldStatus = true;
                     }
 
@@ -538,7 +551,7 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
 
         if (time - goldTime > 5000) {
             gameInitializer.getBall().setFill(new ImagePattern(new Image("ball.png")));
-            uiController.getRoot().getStyleClass().remove("goldRoot");
+            root.getStyleClass().remove("goldRoot");
             isGoldStatus = false;
         }
 
