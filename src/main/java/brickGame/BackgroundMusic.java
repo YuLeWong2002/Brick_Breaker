@@ -16,6 +16,8 @@ public class BackgroundMusic {
 
         Media media = new Media(uriString);
         mediaPlayer = new MediaPlayer(media);
+        // Set an event handler to restart the music when it reaches the end
+        mediaPlayer.setOnEndOfMedia(() -> mediaPlayer.seek(Duration.ZERO));
     }
 
     public void play() {
@@ -27,6 +29,12 @@ public class BackgroundMusic {
     public void pause() {
         if (mediaPlayer != null) {
             mediaPlayer.pause();
+        }
+    }
+
+    public void resume() {
+        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
+            mediaPlayer.play();
         }
     }
 
@@ -45,4 +53,5 @@ public class BackgroundMusic {
     public boolean isPlaying() {
         return mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING;
     }
+
 }

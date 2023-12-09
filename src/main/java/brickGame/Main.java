@@ -1,30 +1,54 @@
-    package brickGame;
+package brickGame;
 
-    import javafx.application.Application;
-    import javafx.stage.Stage;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-    public class Main extends Application {
+import java.io.IOException;
 
-        private GameInitializer gameInitializer;
-        private UIController uiController;
-        public UIController getUiController() { return uiController; }
-        private GameController gameController;
-        private double v = 1.000;
-        public static String savePath    = "D:/save/save.mdds";
-        Stage primaryStage;
-        @Override
-        public void start(Stage primaryStage) throws Exception {
-            this.primaryStage = primaryStage;
-            if(uiController == null) {
-                uiController = new UIController(Main.this, primaryStage);
-            }
-            uiController.initGame();
-            gameInitializer = uiController.getGameInitializer();
-            gameController = uiController.getGameController();
-            uiController.initializeUI();
-        }
+public class Main extends Application {
 
-        public static void main(String[] args) { launch(args); }
-
-        float oldXBreak;
+    private static GameInitializer gameInitializer;
+    private static UIController uiController;
+    private static MainMenuController mainMenuController;
+    private static BackgroundMusic backgroundMusic;
+    public static String savePath    = "D:/save/save.mdds";
+    String mediaPath = "src/main/resources/GameMusic.mp3";
+    Stage primaryStage;
+    public static Scene scene;
+    public static Parent loadFXML(String fxml) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/" + fxml + ".fxml"));
+        return fxmlLoader.load();
     }
+
+    static void setRoot(String fxml) throws IOException {
+        scene.setRoot(loadFXML(fxml));
+    }
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        this.primaryStage = primaryStage;
+        if(uiController == null) {
+            uiController = new UIController(this, primaryStage);
+        }
+        if(gameInitializer == null) {
+            gameInitializer = new GameInitializer(this);
+        }
+        if(mainMenuController == null) {
+            mainMenuController = new MainMenuController(this);
+        }
+        if(backgroundMusic == null) {
+            backgroundMusic = new BackgroundMusic(mediaPath);
+        }
+        if(!backgroundMusic.isPlaying()) {
+            backgroundMusic.play();
+        }
+        uiController.initializeUI();
+    }
+
+    public static void main(String[] args) { launch(args); }
+    public static UIController getUiController() { return uiController; }
+    public static GameInitializer getGameInitializer() { return gameInitializer; }
+    public static BackgroundMusic getBackgroundMusic() { return backgroundMusic; }
+}
