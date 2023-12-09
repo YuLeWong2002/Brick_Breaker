@@ -198,7 +198,7 @@ public class BallMovement {
         }
 
         if (collideToLeftBlock) {
-            goRightBall = true;
+            goRightBall = false;
         }
 
         if (collideToTopBlock) {
