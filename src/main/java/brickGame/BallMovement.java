@@ -109,13 +109,13 @@ public class BallMovement {
             gameInitializer.setxBall(gameInitializer.getxBall()-vX);
         }
 
-        if (gameInitializer.getyBall() <= 0) {
+        if (gameInitializer.getyBall() - gameInitializer.getBallRadius() <= 0) {
             //vX = 1.000;
             resetCollideFlags();
             goDownBall = true;
             return;
         }
-        if (gameInitializer.getyBall() >= uiController.getSceneHeight()) {
+        if (gameInitializer.getyBall() + gameInitializer.getBallRadius() >= uiController.getSceneHeight()) {
             goDownBall = false;
             if (!gameController.getIsGoldStatus()) {
                 //TODO game over
@@ -161,13 +161,13 @@ public class BallMovement {
             }
         }
 
-        if (gameInitializer.getxBall() >= uiController.getSceneWidth()) {
+        if (gameInitializer.getxBall() + gameInitializer.getBallRadius() >= uiController.getSceneWidth()) {
             resetCollideFlags();
             //vX = 1.000;
             collideToRightWall = true;
         }
 
-        if (gameInitializer.getxBall() <= 0) {
+        if (gameInitializer.getxBall() - gameInitializer.getBallRadius() <= 0) {
             resetCollideFlags();
             //vX = 1.000;
             collideToLeftWall = true;
