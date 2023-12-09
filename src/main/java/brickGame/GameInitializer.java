@@ -130,7 +130,6 @@ public class GameInitializer {
                     type = Block.BLOCK_NORMAL;
                 }
                 blocks.add(new Block(j, i, colors[r % (colors.length)], type));
-                //System.out.println("colors " + r % (colors.length));
                 System.out.println(blocks.size()+"Yoo");
             }
         }
@@ -165,6 +164,7 @@ public class GameInitializer {
             initializeEngine(Main.getUiController().getLoader().getController());
 
         } else{
+            Main.getBackgroundMusic().stop();
             loadFromSave = false;
         }
     }
@@ -180,9 +180,6 @@ public class GameInitializer {
     }
 
     public void initializeLoadElements(Pane pane) {
-//        initBall(pane);
-//        initBreak(pane);
-        //initBoard();
         if(loadFromSave) {
             for (Block block : blocks) {
                 pane.getChildren().add(block.rect);
