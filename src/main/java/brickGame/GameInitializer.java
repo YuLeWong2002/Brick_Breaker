@@ -1,6 +1,7 @@
 package brickGame;
 
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
@@ -11,8 +12,6 @@ import java.util.Random;
 
 public class GameInitializer {
     private int level = 0;
-    private int sceneWidth = 500;
-    private int sceneHeight = 700;
     private Circle ball;
     private int ballRadius = 10;
     public int getBallRadius() { return ballRadius; }
@@ -47,19 +46,12 @@ public class GameInitializer {
     };
     private Main main;
     private GameEngine engine;
-//    public void setMain(Main main) { this.main = main; }
-//
-//    public Main getMain() {
-//        return main;
-//    }
 
     public GameInitializer(Main main) {
         this.main = main;
-//        setMain(getMain());
-//        this.main = getMain();
         if(main == null) {
             System.out.println("Constructor Init main is null");
-        } else {System.out.println("GameInitNot null");}
+        } else {System.out.println("GameInit Not null");}
     }
     public Circle getBall() {
         return ball;
@@ -69,20 +61,29 @@ public class GameInitializer {
     public void setyBall(double y) {yBall = y; }
     public double getyBall() { return yBall; }
     public double getxBreak() { return xBreak; }
-    public void setxBreak(double count) { xBreak = count; }
+    public void setxBreak(double newXBreak) {
+        // Ensure newXBreak stays within the range [0, 370]
+        newXBreak = Math.max(0.0, Math.min(370.0, newXBreak));
+        this.xBreak = newXBreak;
+    }
     public boolean getLoadFromSave() { return loadFromSave; }
     public void setLoadFromSave(boolean load) { loadFromSave = load; }
+    private UIController uiController = Main.getUiController();
 
-    public void initBall() {
+    public void initBall(Pane pane) {
         Random random = new Random();
-        xBall = random.nextInt(sceneWidth) + 1;
-        yBall = random.nextInt(sceneHeight - 200) + ((level + 1) * Block.getHeight()) + 15;
+        xBall = random.nextInt(uiController.getSceneWidth()) + 1;
+        yBall = random.nextInt(uiController.getSceneHeight() - ((level + 1) * Block.getHeight()) - 100) + ((level + 1) * Block.getHeight()) + 15;
+//        yBall = random.nextInt(uiController.getSceneHeight() - 200) + ((level + 1) * Block.getHeight()) + 15;
         ball = new Circle();
         ball.setRadius(ballRadius);
         ball.setFill(new ImagePattern(new Image("ball.png")));
+
+        // Add the ball to the Pane
+        pane.getChildren().add(ball);
     }
 
-    public void initBreak() {
+    public void initBreak(Pane pane) {
         rect = new Rectangle();
         rect.setWidth(breakWidth);
         rect.setHeight(breakHeight);
@@ -92,6 +93,8 @@ public class GameInitializer {
         ImagePattern pattern = new ImagePattern(new Image("block.jpg"));
 
         rect.setFill(pattern);
+
+        pane.getChildren().add(rect);
     }
 
     public Rectangle getRect() {
@@ -120,7 +123,10 @@ public class GameInitializer {
                     }
                 } else if (r % 10 == 3) {
                     type = Block.BLOCK_STAR;
-                } else {
+                } else if (r % 10 == 4) {
+                    type = Block.BLOCK_PENALTY;
+                }
+                else {
                     type = Block.BLOCK_NORMAL;
                 }
                 blocks.add(new Block(j, i, colors[r % (colors.length)], type));
@@ -140,7 +146,6 @@ public class GameInitializer {
         System.out.println("test");
         engine.setFps(120);
         engine.start();
-        System.out.println("Blocks in initializeEngine"+getBlocks());
     }
 
     public void stopEngine() {
@@ -153,18 +158,37 @@ public class GameInitializer {
     public void setLevel(int count) { level = count; }
 
     public void startLevel() {
-        if (level > 1 && level < 18) {
+        if (level > 1 && level < 4) {
             if(main == null) {
                 System.out.println("main is null");
             } else {System.out.println("Not null");}
-            initializeEngine(main.getUiController().getGameController());
+            initializeEngine(Main.getUiController().getLoader().getController());
 
         } else{
-            engine = new GameEngine();
-            engine.setOnAction(main.getUiController().getGameController());
-            engine.setFps(120);
-            engine.start();
             loadFromSave = false;
         }
     }
+    public void initializeElements(Pane pane) {
+        initBall(pane);
+        initBreak(pane);
+        initBoard();
+        if(!loadFromSave) {
+            for (Block block : blocks) {
+                pane.getChildren().add(block.rect);
+            }
+        }
+    }
+
+    public void initializeLoadElements(Pane pane) {
+//        initBall(pane);
+//        initBreak(pane);
+        //initBoard();
+        if(loadFromSave) {
+            for (Block block : blocks) {
+                pane.getChildren().add(block.rect);
+            }
+        }
+        System.out.println("BlocksNum generated: " + blocks.size());
+    }
 }
+

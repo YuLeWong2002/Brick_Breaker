@@ -1,115 +1,34 @@
 package brickGame;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import java.io.IOException;
+import java.util.Random;
+
+import static brickGame.Main.getGameInitializer;
+import static brickGame.Main.scene;
 
 public class UIController {
     private Main main;
+    private Stage primaryStage;
     private GameController gameController;
-    private GameInitializer gameInitializer;
+    FXMLLoader loader;
+    private int sceneWidth = 500;
+    private int sceneHeight = 700;
+
     public UIController(Main main, Stage primaryStage) {
         this.main = main;
         this.primaryStage = primaryStage;
         if(main == null) {
-            System.out.println("UImain is null");
-        } else {System.out.println("UINot null");}
+            System.out.println("UI main is null");
+        } else {System.out.println("UI Not null");}
     }
-    public GameInitializer getGameInitializer() { return this.gameInitializer; }
-    public GameController getGameController() { return this.gameController; }
-    private Stage primaryStage;
-    private Button load;
-    private Button newGame;
-    public  Pane             root;
-    public Pane getRoot() { return root; }
-    private Label            scoreLabel;
-    private Label            heartLabel;
-    private Label            levelLabel;
-    private int sceneWidth = 500;
-    public int getSceneWidth() { return sceneWidth; }
-    private int sceneHeight = 700;
-    public int getSceneHeight() { return sceneHeight; }
-    public void initGame() {
-        if (gameInitializer == null) {
-            gameInitializer = new GameInitializer(main);
-            gameController = new GameController(main, this, primaryStage, gameInitializer);
-        }
-    }
-    public void initializeUI() {
-        if (gameInitializer.getLoadFromSave() == false) {
-            showNewLevel();
-            System.out.println("Level: " + gameInitializer.getLevel());
-            gameInitializer.initBall();
-            gameInitializer.initBreak();
-            gameInitializer.initBoard();
-            if(main == null) {
-                System.out.println("main is null");
-            } else {System.out.println("Not null");}
 
-            load = createButton("Load Game", 220, 300);
-            newGame = createButton("Start New Game", 220, 340);
-
-        }
-
-        root = new Pane();
-        scoreLabel = new Label("Score: " + gameController.getScore());
-        levelLabel = new Label("Level: " + gameInitializer.getLevel());
-        levelLabel.setTranslateY(20);
-        heartLabel = new Label("Heart : " + gameController.getHeart());
-        heartLabel.setTranslateX(sceneWidth - 70);
-        if (gameInitializer.getLoadFromSave() == false) {
-            root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel, newGame, load);
-        } else {
-            root.getChildren().addAll(gameInitializer.getRect(), gameInitializer.getBall(), scoreLabel, heartLabel, levelLabel);
-        }
-        for (Block block : gameInitializer.getBlocks()) {
-            root.getChildren().add(block.rect);
-        }
-        Scene scene = new Scene(root, sceneWidth, sceneHeight);
-        scene.getStylesheets().add("style.css");
-        scene.setOnKeyPressed(gameController);
-
-        // Set up the primary stage
-        primaryStage.setTitle("Game");
-        primaryStage.setScene(scene);
-        // Show the primary stage
-        primaryStage.show();
-        if (gameInitializer.getLoadFromSave() == false) {
-            if (gameInitializer.getLevel() > 1 && gameInitializer.getLevel() < 18) {
-                load.setVisible(false);
-                newGame.setVisible(false);
-                gameInitializer.startLevel();
-            }
-            // Add event handlers for buttons
-            load.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    gameController.loadGame();
-
-                    load.setVisible(false);
-                    newGame.setVisible(false);
-                }
-            });
-
-            newGame.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    gameInitializer.initializeEngine(gameController);
-                    load.setVisible(false);
-                    newGame.setVisible(false);
-                    System.out.println("BLOCKSNUMINBUTTON: " + gameInitializer.getBlocks());
-                }
-            });
-        } else {
-            gameInitializer.initializeEngine(gameController);
-            gameInitializer.setLoadFromSave(false);
-        }
-
-    }
     public void startGame() { try {
         main.start(primaryStage);
     } catch (Exception e) {
@@ -117,29 +36,97 @@ public class UIController {
     } }
 
     public void showNewLevel() {
-        System.out.println("Current Level: " + gameInitializer.getLevel());
-        gameInitializer.setLevel(gameInitializer.getLevel() + 1);
-        System.out.println("New Level: " + gameInitializer.getLevel());
-        if (gameInitializer.getLevel() > 1) {
+        System.out.println("Current Level: " + Main.getGameInitializer().getLevel());
+        Main.getGameInitializer().setLevel(Main.getGameInitializer().getLevel() + 1);
+        System.out.println("New Level: " + Main.getGameInitializer().getLevel());
+        if (Main.getGameInitializer().getLevel() > 1 && Main.getGameInitializer().getLevel() < 4) {
             new Score().showMessage("Level Up :)", main);
         }
-        if (gameInitializer.getLevel() == 18) {
+        if (Main.getGameInitializer().getLevel() == 4) {
             new Score().showWin(main);
         }
     }
+    private Color[]          colors = new Color[]{
+            Color.MAGENTA,
+            Color.RED,
+            Color.GOLD,
+            Color.CORAL,
+            Color.AQUA,
+            Color.VIOLET,
+            Color.GREENYELLOW,
+            Color.ORANGE,
+            Color.PINK,
+            Color.SLATEGREY,
+            Color.YELLOW,
+            Color.TOMATO,
+            Color.TAN,
+    };
 
-    private Button createButton(String text, double translateX, double translateY) {
-        Button button = new Button(text);
-        button.setTranslateX(translateX);
-        button.setTranslateY(translateY);
-        return button;
-    }
-    public Label getScoreLabel() {
-        return scoreLabel;
+    public void initializeUI() throws IOException {
+        if (!getGameInitializer().getLoadFromSave()) {
+            if (Main.getGameInitializer().getLevel() < 1) {
+                scene = new Scene(Main.loadFXML("MainMenu"), sceneWidth, sceneHeight);
+                scene.getStylesheets().add("style.css");
+                primaryStage.setScene(scene);
+                primaryStage.setTitle("Brick Breaker");
+                primaryStage.show();
+            } else {
+                switchToGameScene();
+                startNewGameElements();
+                Main.getGameInitializer().startLevel();
+            }
+        } else {
+//            for (BlockSerializable ser : getGameController().getGameIOController().getLoadSave().blocks) {
+//                int r = new Random().nextInt(200);
+//                Block block = new Block(ser.row, ser.j, colors[r % colors.length], ser.type);
+//                getGameInitializer().getBlocks().add(block);
+//
+//                // Add the Rectangle to the Pane
+//                gameController.getRoot().getChildren().add(block.rect);
+//            }
+            startLoadGameElements();
+            getGameInitializer().initializeEngine(gameController);
+            getGameInitializer().setLoadFromSave(false);
+        }
     }
 
-    public Label getHeartLabel() {
-        return heartLabel;
+    @FXML
+    public void switchToGameScene() throws IOException {
+        loader = new FXMLLoader(getClass().getResource("/Game.fxml"));
+        Parent gameRoot = loader.load();
+        gameController = loader.getController();
+        scene.setOnKeyPressed(gameController);
+        Main.scene.setRoot(gameRoot);
     }
+
+    public void startNewGameElements() {
+        if(!getGameInitializer().getLoadFromSave()) {
+            showNewLevel();
+        }
+        gameController.levelLabel.setText("Level: " + getGameInitializer().getLevel());
+        gameController.heartLabel.setText("Heart: " + gameController.getHeart());
+        gameController.scoreLabel.setText("Score: " + gameController.getScore());
+        if(!getGameInitializer().getLoadFromSave()) {
+            Main.getGameInitializer().initializeElements(gameController.getRoot());
+        }
+    }
+
+    public void startLoadGameElements() {
+        gameController.levelLabel.setText("Level: " + gameController.getGameInitializer().getLevel());
+        gameController.heartLabel.setText("Heart: " + gameController.getHeart());
+        gameController.scoreLabel.setText("Score: " + gameController.getScore());
+        Main.getGameInitializer().initializeLoadElements(gameController.getRoot());
+    }
+
+    public int getSceneWidth() { return sceneWidth; }
+    public int getSceneHeight() { return sceneHeight; }
+
+    public GameController getGameController() {
+        return gameController;
+    }
+
+    public Main getMain() { return main; }
+
+    public FXMLLoader getLoader() { return loader; }
 }
 

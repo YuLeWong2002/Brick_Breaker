@@ -1,19 +1,10 @@
 package brickGame;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import java.io.IOException;
-import java.util.Objects;
+
 
 public class MainMenuController {
 
@@ -31,8 +22,17 @@ public class MainMenuController {
     }
 
     @FXML
-    private void onClickLoad() {
-        Main.getGameController().loadGame();
+    private void onClickLoad() throws IOException {
+        Main.getUiController().switchToGameScene();
+        GameController gameController = Main.getUiController().getGameController();
+        Main.getGameInitializer().initBall(gameController.getRoot());
+        Main.getGameInitializer().initBreak(gameController.getRoot());
+//        GameController gameController = Main.getUiController().getGameController();
+        gameController.getGameIOController().loadGame();
+//        Main.getUiController().switchToGameScene();
+//        Main.getUiController().startLoadGameElements();
+//        GameController gameController = Main.getUiController().getGameController();
+//        gameController.getGameIOController().loadGame();
         load.setVisible(false);
         newGame.setVisible(false);
     }

@@ -36,9 +36,12 @@ public class GameIOController {
             System.out.println("GameIO main is null");
         } else {System.out.println("GameIO Not null");}
     }
+    private LoadSave loadSave;
+    public LoadSave getLoadSave() { return loadSave; }
+
     public void loadGame() {
 
-        LoadSave loadSave = new LoadSave();
+        loadSave = new LoadSave();
         loadSave.read();
 
         gameController.setExistHeartBlock(loadSave.isExistHeartBlock);
@@ -46,7 +49,7 @@ public class GameIOController {
         gameController.setGoldStatus(loadSave.isGoldStatus);
         ballMovement.setGoDownBall(loadSave.goDownBall);
         ballMovement.setGoRightBall(loadSave.goRightBall);
-        ballMovement.setCollideToBreak(loadSave.goRightBall);
+        ballMovement.setCollideToBreak(loadSave.collideToBreak);
         ballMovement.setCollideToBreakAndMoveToRight(loadSave.collideToBreakAndMoveToRight);
         ballMovement.setCollideToRightWall(loadSave.collideToRightWall);
         ballMovement.setCollideToLeftWall(loadSave.collideToLeftWall);
@@ -57,7 +60,7 @@ public class GameIOController {
         gameInitializer.setLevel(loadSave.level);
         gameController.setScore(loadSave.score);
         gameController.setHeart(loadSave.heart);
-        gameController.setDestroyedBlockCount(loadSave.destroyedBlockCount);
+        //gameController.setDestroyedBlockCount(loadSave.destroyedBlockCount);
         gameInitializer.setxBall(loadSave.xBall);
         gameInitializer.setyBall(loadSave.yBall);
         gameController.setxBreak(loadSave.xBreak);
@@ -98,7 +101,7 @@ public class GameIOController {
                     outputStream.writeInt(gameInitializer.getLevel());
                     outputStream.writeInt(gameController.getScore());
                     outputStream.writeInt(gameController.getHeart());
-                    outputStream.writeInt(gameController.getDestroyedBlockCount());
+                    //outputStream.writeInt(gameController.getDestroyedBlockCount());
 
 
                     outputStream.writeDouble(gameInitializer.getxBall());
