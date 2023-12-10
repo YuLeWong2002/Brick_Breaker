@@ -12,24 +12,24 @@ import java.util.Random;
 public class GameIOController {
 
     /** Reference to the main application class. */
-    private Main main;
+    private final Main main;
 
     /** Reference to the game controller responsible for game logic. */
-    private GameController gameController;
+    private final GameController gameController;
 
     /** Reference to the user interface controller. */
-    private UIController uiController = Main.getUiController();
+    private final UIController uiController = Main.getUiController();
 
     /** Reference to the ball movement controller. */
-    private BallMovement ballMovement;
+    private final BallMovement ballMovement;
 
     /** Reference to the game initializer responsible for setting up the game. */
-    private GameInitializer gameInitializer = Main.getGameInitializer();
+    private final GameInitializer gameInitializer = Main.getGameInitializer();
 
     /** The directory path for saving game data. */
     public static String savePathDir = "D:/save/";
 
-    private Color[]          colors = new Color[]{
+    private final Color[]          colors = new Color[]{
             Color.MAGENTA,
             Color.RED,
             Color.GOLD,
@@ -63,16 +63,14 @@ public class GameIOController {
     }
 
     /**
-     * The LoadSave instance used for reading and storing game state data during loading and saving operations.
-     */
-    private LoadSave loadSave;
-
-    /**
      * Loads the game state from a saved file using the LoadSave instance. It updates various game components and initializes the game with the loaded data.
      */
     public void loadGame() {
 
-        loadSave = new LoadSave();
+        /**
+         * The LoadSave instance used for reading and storing game state data during loading and saving operations.
+         */
+        LoadSave loadSave = new LoadSave();
         loadSave.read();
 
         gameInitializer.setExistHeartBlock(loadSave.isExistHeartBlock);
