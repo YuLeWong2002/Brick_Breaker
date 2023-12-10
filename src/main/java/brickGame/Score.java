@@ -1,11 +1,8 @@
 package brickGame;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
 
 /**
  * The {@code Score} class provides methods for displaying score-related messages,
@@ -68,25 +65,17 @@ public class Score {
         label.setTranslateX(220);
         label.setTranslateY(340);
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                gameController.getRoot().getChildren().add(label);
-            }
-        });
+        Platform.runLater(() -> gameController.getRoot().getChildren().add(label));
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 21; i++) {
-                    try {
-                        label.setScaleX(Math.abs(i-10));
-                        label.setScaleY(Math.abs(i-10));
-                        label.setOpacity((20 - i) / 20.0);
-                        Thread.sleep(15);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        new Thread(() -> {
+            for (int i = 0; i < 21; i++) {
+                try {
+                    label.setScaleX(Math.abs(i-10));
+                    label.setScaleY(Math.abs(i-10));
+                    label.setOpacity((20 - i) / 20.0);
+                    Thread.sleep(15);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();
@@ -96,28 +85,20 @@ public class Score {
      * Displays a game over message along with a restart button on the game screen.
      */
     public void showGameOver() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Label label = new Label("Game Over :(");
-                label.setTranslateX(200);
-                label.setTranslateY(250);
-                label.setScaleX(2);
-                label.setScaleY(2);
+        Platform.runLater(() -> {
+            Label label = new Label("Game Over :(");
+            label.setTranslateX(200);
+            label.setTranslateY(250);
+            label.setScaleX(2);
+            label.setScaleY(2);
 
-                Button restart = new Button("Restart");
-                restart.setTranslateX(220);
-                restart.setTranslateY(300);
-                restart.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        gameController.restartGame();
-                    }
-                });
+            Button restart = new Button("Restart");
+            restart.setTranslateX(220);
+            restart.setTranslateY(300);
+            restart.setOnAction(event -> gameController.restartGame());
 
-                gameController.getRoot().getChildren().addAll(label, restart);
+            gameController.getRoot().getChildren().addAll(label, restart);
 
-            }
         });
     }
 
@@ -125,18 +106,15 @@ public class Score {
      * Displays a victory message on the game screen.
      */
     public void showWin() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                Label label = new Label("You Win :)");
-                label.setTranslateX(200);
-                label.setTranslateY(250);
-                label.setScaleX(2);
-                label.setScaleY(2);
+        Platform.runLater(() -> {
+            Label label = new Label("You Win :)");
+            label.setTranslateX(200);
+            label.setTranslateY(250);
+            label.setScaleX(2);
+            label.setScaleY(2);
 
-                gameController.getRoot().getChildren().addAll(label);
+            gameController.getRoot().getChildren().addAll(label);
 
-            }
         });
     }
 }

@@ -7,12 +7,30 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+/**
+ * The main class for the JavaFX application. It serves as the entry point for the
+ * application and extends the {@link javafx.application.Application} class.
+ */
 public class Main extends Application {
 
+    /**
+     * Represents the GameInitializer instance associated with the application.
+     * This class is responsible for initializing and managing game-related elements.
+     */
     private static GameInitializer gameInitializer;
+
+    /**
+     * Represents the UIController instance associated with the application.
+     * This class is responsible for managing the user interface and coordinating UI-related functionality.
+     */
     private static UIController uiController;
-    private static MainMenuController mainMenuController;
+
+    /**
+     * Represents the BackgroundMusic instance associated with the application.
+     * This class handles the background music for the game.
+     */
     private static BackgroundMusic backgroundMusic;
+
     public static String savePath    = "D:/save/save.mdds";
     String mediaPath = "src/main/resources/GameMusic.mp3";
     public static Scene scene;
@@ -32,7 +50,7 @@ public class Main extends Application {
     /**
      * Overrides the start method of the Application class.
      * Initializes various components such as UIController, GameInitializer,
-     * MainMenuController, and BackgroundMusic. Starts background music if it is not playing,
+     * BackgroundMusic. Starts background music if it is not playing,
      * and initializes the UI through UIController.
      *
      * @param primaryStage The primary stage for the JavaFX application.
@@ -47,12 +65,7 @@ public class Main extends Application {
 
         // Initialize GameInitializer if not already initialized
         if (gameInitializer == null) {
-            gameInitializer = new GameInitializer(this);
-        }
-
-        // Initialize MainMenuController if not already initialized
-        if (mainMenuController == null) {
-            mainMenuController = new MainMenuController(this);
+            gameInitializer = new GameInitializer();
         }
 
         // Initialize BackgroundMusic if not already initialized

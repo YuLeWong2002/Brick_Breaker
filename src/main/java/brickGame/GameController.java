@@ -59,17 +59,14 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
      * The GameIOController instance responsible for managing game input/output.
      */
     private final GameIOController gameIOController;
-    /**
-     * The Main instance associated with the UI controller.
-     */
-    private final Main main = uiController.getMain();
+
     /**
      * Constructor for the GameController class. Initializes the BallMovement and GameIOController instances.
      * If additional initialization is needed, it can be added here.
      */
     public GameController() {
-        ballMovement = new BallMovement(main, this);
-        gameIOController = new GameIOController(main, this, ballMovement);
+        ballMovement = new BallMovement(this);
+        gameIOController = new GameIOController(this, ballMovement);
     }
     /**
      * Represents the x-coordinate of the paddle in the game.
@@ -412,7 +409,7 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
     private void handleBlockCollision(Block block, int hitCode) {
         // Increment score and display a score message
         score += 1;
-        new Score().show(block.x, block.y, 1, main);
+        new Score().show(block.x, block.y, 1);
 
         // Hide the block and mark it as destroyed
         block.rect.setVisible(false);
@@ -516,7 +513,7 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
                 choco.taken = true;
                 choco.choco.setVisible(false);
                 score += 3;
-                new Score().show(choco.x, choco.y, 3, main);
+                new Score().show(choco.x, choco.y, 3);
             }
             choco.y += ((time - choco.timeCreated) / 1000.000) + 1.000;
         }
@@ -530,7 +527,7 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
                 penalty.taken = true;
                 penalty.crackedBrick.setVisible(false);
                 score -= 3;
-                new Score().show(penalty.x, penalty.y, -3, main);
+                new Score().show(penalty.x, penalty.y, -3);
             }
             penalty.y += ((time - penalty.timeCreated) / 1000.000) + 1.000;
         }

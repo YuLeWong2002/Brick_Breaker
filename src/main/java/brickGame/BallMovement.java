@@ -21,19 +21,13 @@ public class BallMovement {
      * The controller responsible for managing game-related logic.
      */
     private final GameController gameController;
-    /**
-     * The main application instance
-     */
-    private final Main main;
 
     /**
      * Constructs a new {@code BallMovement} instance.
      *
-     * @param main            The main application class.
      * @param gameController  The game controller responsible for handling user input and game events.
      */
-    public BallMovement(Main main, GameController gameController) {
-        this.main = main;
+    public BallMovement(GameController gameController) {
         this.gameController = gameController;
     }
 
@@ -149,10 +143,10 @@ public class BallMovement {
             goDownBall = false;
             if (!gameController.getIsGoldStatus()) {
                 gameController.setHeart(gameController.getHeart()-1);
-                new Score().show((double) uiController.getSceneWidth() / 2, (double) uiController.getSceneHeight() / 2, -1, main);
+                new Score().show((double) uiController.getSceneWidth() / 2, (double) uiController.getSceneHeight() / 2, -1);
 
                 if (gameController.getHeart() == 0) {
-                    new Score().showGameOver(main);
+                    new Score().showGameOver();
                     gameInitializer.stopEngine();
                 }
 
