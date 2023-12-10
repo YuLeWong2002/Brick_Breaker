@@ -20,11 +20,11 @@ public class BallMovement {
     /**
      * The controller responsible for managing game-related logic.
      */
-    private GameController gameController;
+    private final GameController gameController;
     /**
      * The main application instance
      */
-    private Main main;
+    private final Main main;
 
     /**
      * Constructs a new {@code BallMovement} instance.
@@ -95,7 +95,7 @@ public class BallMovement {
     /**
      * The vertical velocity of the ball.
      */
-    private double vY = 1.000;
+    private final double vY = 1.000;
 
     /**
      * Resets all collision flags related to the ball's interaction with the game elements.
