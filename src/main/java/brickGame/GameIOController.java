@@ -6,13 +6,29 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Handles saving and loading game state.
+ */
 public class GameIOController {
+
+    /** Reference to the main application class. */
     private Main main;
+
+    /** Reference to the game controller responsible for game logic. */
     private GameController gameController;
+
+    /** Reference to the user interface controller. */
     private UIController uiController = Main.getUiController();
+
+    /** Reference to the ball movement controller. */
     private BallMovement ballMovement;
+
+    /** Reference to the game initializer responsible for setting up the game. */
     private GameInitializer gameInitializer = Main.getGameInitializer();
+
+    /** The directory path for saving game data. */
     public static String savePathDir = "D:/save/";
+
     private Color[]          colors = new Color[]{
             Color.MAGENTA,
             Color.RED,
@@ -28,6 +44,15 @@ public class GameIOController {
             Color.TOMATO,
             Color.TAN,
     };
+
+    /**
+     * Constructs a new GameIOController with references to the main application, game controller,
+     * ball movement controller, and game initializer.
+     *
+     * @param main            Reference to the main application class.
+     * @param gameController  Reference to the game controller.
+     * @param ballMovement    Reference to the ball movement controller.
+     */
     public GameIOController(Main main, GameController gameController, BallMovement ballMovement) {
         this.main = main;
         this.gameController = gameController;
@@ -36,15 +61,21 @@ public class GameIOController {
             System.out.println("GameIO main is null");
         } else {System.out.println("GameIO Not null");}
     }
-    private LoadSave loadSave;
-    public LoadSave getLoadSave() { return loadSave; }
 
+    /**
+     * The LoadSave instance used for reading and storing game state data during loading and saving operations.
+     */
+    private LoadSave loadSave;
+
+    /**
+     * Loads the game state from a saved file using the LoadSave instance. It updates various game components and initializes the game with the loaded data.
+     */
     public void loadGame() {
 
         loadSave = new LoadSave();
         loadSave.read();
 
-        gameController.setExistHeartBlock(loadSave.isExistHeartBlock);
+        gameInitializer.setExistHeartBlock(loadSave.isExistHeartBlock);
         gameController.setGoldStatus(loadSave.isGoldStatus);
         gameController.setGoldStatus(loadSave.isGoldStatus);
         ballMovement.setGoDownBall(loadSave.goDownBall);
@@ -60,7 +91,6 @@ public class GameIOController {
         gameInitializer.setLevel(loadSave.level);
         gameController.setScore(loadSave.score);
         gameController.setHeart(loadSave.heart);
-        //gameController.setDestroyedBlockCount(loadSave.destroyedBlockCount);
         gameInitializer.setxBall(loadSave.xBall);
         gameInitializer.setyBall(loadSave.yBall);
         gameController.setxBreak(loadSave.xBreak);
@@ -88,6 +118,9 @@ public class GameIOController {
 
     }
 
+    /**
+     * Saves the current state of the game to a file in a separate thread. It creates a new thread to perform the file writing operation.
+     */
     public void saveGame() {
         new Thread(new Runnable() {
             @Override
@@ -101,7 +134,6 @@ public class GameIOController {
                     outputStream.writeInt(gameInitializer.getLevel());
                     outputStream.writeInt(gameController.getScore());
                     outputStream.writeInt(gameController.getHeart());
-                    //outputStream.writeInt(gameController.getDestroyedBlockCount());
 
 
                     outputStream.writeDouble(gameInitializer.getxBall());
@@ -114,7 +146,7 @@ public class GameIOController {
                     outputStream.writeDouble(ballMovement.getvX());
 
 
-                    outputStream.writeBoolean(gameController.isExistHeartBlock());
+                    outputStream.writeBoolean(gameInitializer.isExistHeartBlock());
                     outputStream.writeBoolean(gameController.getIsGoldStatus());
                     outputStream.writeBoolean(ballMovement.isGoDownBall());
                     outputStream.writeBoolean(ballMovement.isGoRightBall());
