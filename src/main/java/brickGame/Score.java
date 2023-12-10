@@ -6,10 +6,26 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-//import sun.plugin2.message.Message;
 
+/**
+ * The {@code Score} class provides methods for displaying score-related messages,
+ * such as showing scores, game over messages, and victory messages in a JavaFX game.
+ */
 public class Score {
-    public void show(final double x, final double y, int score, final Main main) {
+
+    /**
+     * The game controller associated with the UI, used to access the root node and restart the game.
+     */
+    GameController gameController = Main.getUiController().getLoader().getController();
+
+    /**
+     * Displays a score label animation at the specified position on the game screen.
+     *
+     * @param x     The x-coordinate of the position.
+     * @param y     The y-coordinate of the position.
+     * @param score The score to be displayed.
+     */
+    public void show(final double x, final double y, int score) {
         String sign;
         if (score >= 0) {
             sign = "+";
@@ -20,7 +36,7 @@ public class Score {
         label.setTranslateX(x);
         label.setTranslateY(y);
 
-        Platform.runLater(() -> main.getUiController().getRoot().getChildren().add(label));
+        Platform.runLater(() -> gameController.getRoot().getChildren().add(label));
 
         new Thread(() -> {
             try {
@@ -34,14 +50,20 @@ public class Score {
                     Thread.sleep(15);
                 }
                 // Remove the label after the animation
-                Platform.runLater(() -> main.getUiController().getRoot().getChildren().remove(label));
+                Platform.runLater(() -> gameController.getRoot().getChildren().remove(label));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }).start();
     }
 
-    public void showMessage(String message, final Main main) {
+
+    /**
+     * Displays a message label animation at a fixed position on the game screen.
+     *
+     * @param message The message to be displayed.
+     */
+    public void showMessage(String message) {
         final Label label = new Label(message);
         label.setTranslateX(220);
         label.setTranslateY(340);
@@ -49,7 +71,7 @@ public class Score {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                main.getUiController().getRoot().getChildren().add(label);
+                gameController.getRoot().getChildren().add(label);
             }
         });
 
@@ -70,8 +92,10 @@ public class Score {
         }).start();
     }
 
-    public void showGameOver(final Main main) {
-        GameController gameController = main.getUiController().getGameController();
+    /**
+     * Displays a game over message along with a restart button on the game screen.
+     */
+    public void showGameOver() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -91,13 +115,16 @@ public class Score {
                     }
                 });
 
-                main.getUiController().getRoot().getChildren().addAll(label, restart);
+                gameController.getRoot().getChildren().addAll(label, restart);
 
             }
         });
     }
 
-    public void showWin(final Main main) {
+    /**
+     * Displays a victory message on the game screen.
+     */
+    public void showWin() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -107,8 +134,7 @@ public class Score {
                 label.setScaleX(2);
                 label.setScaleY(2);
 
-
-                main.getUiController().getRoot().getChildren().addAll(label);
+                gameController.getRoot().getChildren().addAll(label);
 
             }
         });
