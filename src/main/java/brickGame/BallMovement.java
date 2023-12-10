@@ -1,88 +1,107 @@
 package brickGame;
 
+import javafx.application.Platform;
+
+/**
+ * The {@code BallMovement} class represents the movement and behavior of the ball in a game.
+ * It interacts with the {@link GameInitializer}, {@link UIController}, {@link GameController}, and {@link Main} classes
+ * to manage the ball's movement and collisions within the game.
+ */
 public class BallMovement {
+
+    /**
+     * The GameInitializer instance associated with the game.
+     */
     GameInitializer gameInitializer = Main.getGameInitializer();
+    /**
+     * The UIController instance associated with the game.
+     */
     UIController uiController = Main.getUiController();
+    /**
+     * The controller responsible for managing game-related logic.
+     */
     private GameController gameController;
+    /**
+     * The main application instance
+     */
+    private Main main;
+
+    /**
+     * Constructs a new {@code BallMovement} instance.
+     *
+     * @param main            The main application class.
+     * @param gameController  The game controller responsible for handling user input and game events.
+     */
     public BallMovement(Main main, GameController gameController) {
         this.main = main;
         this.gameController = gameController;
-        if(main == null) {
-            System.out.println("Ball main is null");
-        } else {System.out.println("Ball Not null");}
     }
-    private Main main;
-    private boolean goDownBall                  = true;
-    private boolean goRightBall                 = true;
-    private boolean collideToBreak               = false;
+
+    /**
+     * Flag indicating whether the ball is moving downward.
+     */
+    private boolean goDownBall = true;
+
+    /**
+     * Flag indicating whether the ball is moving to the right.
+     */
+    private boolean goRightBall = true;
+
+    /**
+     * Flag indicating whether the ball is colliding with the paddle.
+     */
+    private boolean collideToBreak = false;
+
+    /**
+     * Flag indicating whether the ball is colliding with the paddle and moving to the right.
+     */
     private boolean collideToBreakAndMoveToRight = true;
-    private boolean collideToRightWall           = false;
-    private boolean collideToLeftWall            = false;
-    private boolean collideToRightBlock          = false;
-    private boolean collideToBottomBlock         = false;
-    private boolean collideToLeftBlock           = false;
-    private boolean collideToTopBlock            = false;
+
+    /**
+     * Flag indicating whether the ball is colliding with the right wall.
+     */
+    private boolean collideToRightWall = false;
+
+    /**
+     * Flag indicating whether the ball is colliding with the left wall.
+     */
+    private boolean collideToLeftWall = false;
+
+    /**
+     * Flag indicating whether the ball is colliding with a block on the right.
+     */
+    private boolean collideToRightBlock = false;
+
+    /**
+     * Flag indicating whether the ball is colliding with the bottom of a block.
+     */
+    private boolean collideToBottomBlock = false;
+
+    /**
+     * Flag indicating whether the ball is colliding with a block on the left.
+     */
+    private boolean collideToLeftBlock = false;
+
+    /**
+     * Flag indicating whether the ball is colliding with the top of a block.
+     */
+    private boolean collideToTopBlock = false;
+
+    /**
+     * The horizontal velocity of the ball.
+     */
     private double vX = 1.000;
+
+    /**
+     * The vertical velocity of the ball.
+     */
     private double vY = 1.000;
 
-    public double getvX() {
-        return vX;
-    }
-
-    public void setvX(double vX) { this.vX = vX; }
-
-    public boolean isGoDownBall() {
-        return goDownBall;
-    }
-    public void setCollideToBreak(boolean collideToBreak) { this.collideToBreak = collideToBreak; }
-    public void setCollideToBreakAndMoveToRight(boolean collideToBreakAndMoveToRight) { this.collideToBreakAndMoveToRight= collideToBreakAndMoveToRight; }
-    public void setCollideToRightWall(boolean collideToRightWall) { this.collideToRightWall = collideToRightWall; }
-    public void setCollideToLeftWall(boolean collideToLeftWall) {this.collideToLeftWall = collideToLeftWall; }
-    public boolean isGoRightBall() { return goRightBall; }
-    public void setGoDownBall(boolean goDownBall) { this.goDownBall = goDownBall; }
-    public void setGoRightBall(boolean goRightBall) {this.goRightBall = goRightBall; }
-
-    public boolean isCollideToTopBlock() {
-        return collideToTopBlock;
-    }
-
-    public boolean isCollideToLeftBlock() {
-        return collideToLeftBlock;
-    }
-
-    public boolean isCollideToBottomBlock() {
-        return collideToBottomBlock;
-    }
-
-    public boolean isCollideToRightBlock() {
-        return collideToRightBlock;
-    }
-
-    public boolean isCollideToBreak() {
-        return collideToBreak;
-    }
-
-    public boolean isCollideToBreakAndMoveToRight() {
-        return collideToBreakAndMoveToRight;
-    }
-
-    public boolean isCollideToLeftWall() {
-        return collideToLeftWall;
-    }
-
-    public boolean isCollideToRightWall() {
-        return collideToRightWall;
-    }
-
-    public void setCollideToBottomBlock(boolean collideToBottomBlock) {
-        this.collideToBottomBlock = collideToBottomBlock;
-    }
-    public void setCollideToRightBlock(boolean collideToRightBlock) { this.collideToRightBlock = collideToRightBlock; }
-
-    public void setCollideToLeftBlock(boolean collideToLeftBlock) { this.collideToLeftBlock = collideToLeftBlock; }
-
-    public void setCollideToTopBlock(boolean collideToTopBlock) { this.collideToTopBlock = collideToTopBlock; }
-
+    /**
+     * Resets all collision flags related to the ball's interaction with the game elements.
+     * This method sets flags to false, indicating that the ball is not currently colliding
+     * with specific game elements such as the paddle, walls, or blocks.
+     */
     public void resetCollideFlags() {
 
         collideToBreak = false;
@@ -94,23 +113,34 @@ public class BallMovement {
         collideToLeftBlock = false;
         collideToTopBlock = false;
     }
+
+    /**
+     * Updates the position of the ball based on its current physics and collisions with game elements.
+     * The method uses the ball's velocity, direction, and collision flags to calculate its new position.
+     * Additionally, it handles collisions with the paddle, walls, and blocks, adjusting the ball's movement accordingly.
+     * If the ball collides with the paddle, the method calculates the new velocity based on the collision position,
+     * allowing for different bounce behaviors. If the ball reaches the top or bottom of the scene, it adjusts
+     * its direction accordingly. If the ball hits the right or left walls, it changes its horizontal direction.
+     * If the ball collides with blocks, the collision flags are set to handle block-specific behavior.
+     */
     public void setPhysicsToBall() {
-        //v = ((time - hitTime) / 1000.000) + 1.000;
 
-        if (goDownBall) {
-            gameInitializer.setyBall(gameInitializer.getyBall()+vY);
-        } else {
-            gameInitializer.setyBall(gameInitializer.getyBall()-vY);
-        }
+        Platform.runLater(() -> {
+            if (goDownBall) {
+                gameInitializer.setyBall(gameInitializer.getyBall() + vY);
+            } else {
+                gameInitializer.setyBall(gameInitializer.getyBall() - vY);
+            }
 
-        if (goRightBall) {
-            gameInitializer.setxBall(gameInitializer.getxBall()+vX);
-        } else {
-            gameInitializer.setxBall(gameInitializer.getxBall()-vX);
-        }
+            if (goRightBall) {
+                gameInitializer.setxBall(gameInitializer.getxBall() + vX);
+            } else {
+                gameInitializer.setxBall(gameInitializer.getxBall() - vX);
+            }
+        });
+
 
         if (gameInitializer.getyBall() - gameInitializer.getBallRadius() <= 0) {
-            //vX = 1.000;
             resetCollideFlags();
             goDownBall = true;
             return;
@@ -118,7 +148,6 @@ public class BallMovement {
         if (gameInitializer.getyBall() + gameInitializer.getBallRadius() >= uiController.getSceneHeight()) {
             goDownBall = false;
             if (!gameController.getIsGoldStatus()) {
-                //TODO game over
                 gameController.setHeart(gameController.getHeart()-1);
                 new Score().show((double) uiController.getSceneWidth() / 2, (double) uiController.getSceneHeight() / 2, -1, main);
 
@@ -128,11 +157,9 @@ public class BallMovement {
                 }
 
             }
-            //return;
         }
 
         if (gameInitializer.getyBall() >= gameController.getyBreak() - gameInitializer.getBallRadius()) {
-            //System.out.println("Collide1");
             if (gameInitializer.getxBall() >= gameInitializer.getxBreak() && gameInitializer.getxBall() <= gameInitializer.getxBreak() + gameInitializer.getBreakWidth()) {
                 gameController.setHItTime(gameController.getTime());
                 resetCollideFlags();
@@ -142,14 +169,11 @@ public class BallMovement {
                 double relation = (gameInitializer.getxBall() - gameController.getCenterBreakX()) / ((double) gameInitializer.getBreakWidth() / 2);
 
                 if (Math.abs(relation) <= 0.3) {
-                    //vX = 0;
                     vX = Math.abs(relation);
                 } else if (Math.abs(relation) > 0.3 && Math.abs(relation) <= 0.7) {
                     vX = (Math.abs(relation) * 1.5) + (gameInitializer.getLevel() / 3.500);
-                    //System.out.println("vX " + vX);
                 } else {
                     vX = (Math.abs(relation) * 2) + (gameInitializer.getLevel() / 3.500);
-                    //System.out.println("vX " + vX);
                 }
 
                 if (gameInitializer.getxBall() - gameController.getCenterBreakX() > 0) {
@@ -157,19 +181,16 @@ public class BallMovement {
                 } else {
                     collideToBreakAndMoveToRight = false;
                 }
-                //System.out.println("Collide2");
             }
         }
 
         if (gameInitializer.getxBall() + gameInitializer.getBallRadius() >= uiController.getSceneWidth()) {
             resetCollideFlags();
-            //vX = 1.000;
             collideToRightWall = true;
         }
 
         if (gameInitializer.getxBall() - gameInitializer.getBallRadius() <= 0) {
             resetCollideFlags();
-            //vX = 1.000;
             collideToLeftWall = true;
         }
 
@@ -208,7 +229,204 @@ public class BallMovement {
         if (collideToBottomBlock) {
             goDownBall = true;
         }
-
-
     }
+
+    /**
+     * Gets the horizontal velocity of the ball.
+     *
+     * @return The current horizontal velocity of the ball.
+     */
+    public double getvX() {
+        return vX;
+    }
+
+    /**
+     * Checks if the ball is currently moving downward.
+     *
+     * @return True if the ball is moving downward, false otherwise.
+     */
+    public boolean isGoDownBall() {
+        return goDownBall;
+    }
+
+    /**
+     * Checks if the ball is currently moving to the right.
+     *
+     * @return True if the ball is moving to the right, false otherwise.
+     */
+    public boolean isGoRightBall() {
+        return goRightBall;
+    }
+
+    /**
+     * Checks if the ball is currently colliding with the top of a block.
+     *
+     * @return True if the ball is colliding with the top of a block, false otherwise.
+     */
+    public boolean isCollideToTopBlock() {
+        return collideToTopBlock;
+    }
+
+    /**
+     * Checks if the ball is currently colliding with the left side of a block.
+     *
+     * @return True if the ball is colliding with the left side of a block, false otherwise.
+     */
+    public boolean isCollideToLeftBlock() {
+        return collideToLeftBlock;
+    }
+
+    /**
+     * Checks if the ball is currently colliding with the bottom of a block.
+     *
+     * @return True if the ball is colliding with the bottom of a block, false otherwise.
+     */
+    public boolean isCollideToBottomBlock() {
+        return collideToBottomBlock;
+    }
+
+    /**
+     * Checks if the ball is currently colliding with the right side of a block.
+     *
+     * @return True if the ball is colliding with the right side of a block, false otherwise.
+     */
+    public boolean isCollideToRightBlock() {
+        return collideToRightBlock;
+    }
+
+    /**
+     * Checks if the ball is currently colliding with the break/paddle element.
+     *
+     * @return True if the ball is colliding with the break/paddle, false otherwise.
+     */
+    public boolean isCollideToBreak() {
+        return collideToBreak;
+    }
+
+    /**
+     * Checks if the ball is currently colliding with the break/paddle and moving to the right.
+     *
+     * @return True if the ball is colliding with the break/paddle and moving to the right, false otherwise.
+     */
+    public boolean isCollideToBreakAndMoveToRight() {
+        return collideToBreakAndMoveToRight;
+    }
+
+    /**
+     * Checks if the ball is currently colliding with the left wall.
+     *
+     * @return True if the ball is colliding with the left wall, false otherwise.
+     */
+    public boolean isCollideToLeftWall() {
+        return collideToLeftWall;
+    }
+
+    /**
+     * Checks if the ball is currently colliding with the right wall.
+     *
+     * @return True if the ball is colliding with the right wall, false otherwise.
+     */
+    public boolean isCollideToRightWall() {
+        return collideToRightWall;
+    }
+
+    /**
+     * Sets the horizontal velocity of the ball.
+     *
+     * @param vX The new horizontal velocity of the ball.
+     */
+    public void setvX(double vX) {
+        this.vX = vX;
+    }
+
+    /**
+     * Sets the flag indicating whether the ball is colliding with the break/paddle.
+     *
+     * @param collideToBreak True if the ball is colliding with the break/paddle, false otherwise.
+     */
+    public void setCollideToBreak(boolean collideToBreak) {
+        this.collideToBreak = collideToBreak;
+    }
+
+    /**
+     * Sets the flag indicating whether the ball is colliding with the break/paddle and moving to the right.
+     *
+     * @param collideToBreakAndMoveToRight True if the ball is colliding with the break/paddle and moving to the right, false otherwise.
+     */
+    public void setCollideToBreakAndMoveToRight(boolean collideToBreakAndMoveToRight) {
+        this.collideToBreakAndMoveToRight = collideToBreakAndMoveToRight;
+    }
+
+    /**
+     * Sets the flag indicating whether the ball is colliding with the right wall.
+     *
+     * @param collideToRightWall True if the ball is colliding with the right wall, false otherwise.
+     */
+    public void setCollideToRightWall(boolean collideToRightWall) {
+        this.collideToRightWall = collideToRightWall;
+    }
+
+    /**
+     * Sets the flag indicating whether the ball is colliding with the left wall.
+     *
+     * @param collideToLeftWall True if the ball is colliding with the left wall, false otherwise.
+     */
+    public void setCollideToLeftWall(boolean collideToLeftWall) {
+        this.collideToLeftWall = collideToLeftWall;
+    }
+
+    /**
+     * Sets the flag indicating the ball's downward movement.
+     *
+     * @param goDownBall True if the ball is moving downward, false otherwise.
+     */
+    public void setGoDownBall(boolean goDownBall) {
+        this.goDownBall = goDownBall;
+    }
+
+    /**
+     * Sets the flag indicating the ball's rightward movement.
+     *
+     * @param goRightBall True if the ball is moving to the right, false otherwise.
+     */
+    public void setGoRightBall(boolean goRightBall) {
+        this.goRightBall = goRightBall;
+    }
+
+    /**
+     * Sets the flag indicating whether the ball is colliding with the bottom of a block.
+     *
+     * @param collideToBottomBlock True if the ball is colliding with the bottom of a block, false otherwise.
+     */
+    public void setCollideToBottomBlock(boolean collideToBottomBlock) {
+        this.collideToBottomBlock = collideToBottomBlock;
+    }
+
+    /**
+     * Sets the flag indicating whether the ball is colliding with the right side of a block.
+     *
+     * @param collideToRightBlock True if the ball is colliding with the right side of a block, false otherwise.
+     */
+    public void setCollideToRightBlock(boolean collideToRightBlock) {
+        this.collideToRightBlock = collideToRightBlock;
+    }
+
+    /**
+     * Sets the flag indicating whether the ball is colliding with the left side of a block.
+     *
+     * @param collideToLeftBlock True if the ball is colliding with the left side of a block, false otherwise.
+     */
+    public void setCollideToLeftBlock(boolean collideToLeftBlock) {
+        this.collideToLeftBlock = collideToLeftBlock;
+    }
+
+    /**
+     * Sets the flag indicating whether the ball is colliding with the top of a block.
+     *
+     * @param collideToTopBlock True if the ball is colliding with the top of a block, false otherwise.
+     */
+    public void setCollideToTopBlock(boolean collideToTopBlock) {
+        this.collideToTopBlock = collideToTopBlock;
+    }
+
 }
