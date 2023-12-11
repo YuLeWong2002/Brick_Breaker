@@ -18,7 +18,7 @@ public class Block implements Serializable {
      * A default block instance with special values indicating it's not part of the regular game board.
      * This is useful for creating a placeholder block with transparent color.
      */
-    private static Block block = new Block(-1, -1, Color.TRANSPARENT, 99);
+    private static final Block block = new Block(-1, -1, Color.TRANSPARENT, 99);
 
     /** The row position of the block in the game grid. */
     public int row;
@@ -31,7 +31,7 @@ public class Block implements Serializable {
     public boolean isDestroyed = false;
 
     /** The color of the block. */
-    private Color color;
+    private final Color color;
 
     /** The type of the block. */
     public int type;
@@ -43,16 +43,16 @@ public class Block implements Serializable {
     public int y;
 
     /** The width of the block. */
-    private int width = 100;
+    private final int width = 100;
 
     /** The height of the block. */
-    private int height = 30;
+    private final int height = 30;
 
     /** The padding at the top of the block. */
-    private int paddingTop = height * 2;
+    private final int paddingTop = height * 2;
 
     /** The horizontal padding of the block. */
-    private int paddingH = 50;
+    private final int paddingH = 50;
 
     /** The graphical representation of the block. */
     public Rectangle rect;
@@ -224,13 +224,13 @@ public class Block implements Serializable {
             double deltaY = Math.min(Math.abs(yBall - y), Math.abs(yBall - blockBottom));
 
             if (deltaX < deltaY) {
-                if (xBall > x + width / 2) {
+                if (xBall > x + (double) width / 2) {
                     hitCodes.add(HIT_RIGHT);
                 } else {
                     hitCodes.add(HIT_LEFT);
                 }
             } else {
-                if (yBall > y + height / 2) {
+                if (yBall > y + (double) height / 2) {
                     hitCodes.add(HIT_BOTTOM);
                 } else {
                     hitCodes.add(HIT_TOP);
@@ -273,12 +273,30 @@ public class Block implements Serializable {
         // Handle multiple hits
         if (!hitCodes.isEmpty()) {
             // Prioritize hits in a specific order
-            if (hitCodes.contains(HIT_TOP)) {
+            if (hitCodes.contains(HIT_TOP_RIGHT) && hitCodes.contains(HIT_TOP_LEFT)) {
                 return HIT_TOP;
-            } else if (hitCodes.contains(HIT_LEFT)) {
-                return HIT_LEFT;
-            } else if (hitCodes.contains(HIT_RIGHT)) {
+            } else if (hitCodes.contains(HIT_BOTTOM_RIGHT) && hitCodes.contains(HIT_BOTTOM_LEFT)){
+                return HIT_BOTTOM;
+            } else if (hitCodes.contains(HIT_TOP_RIGHT) && hitCodes.contains(HIT_BOTTOM_RIGHT)) {
                 return HIT_RIGHT;
+            } else if (hitCodes.contains(HIT_BOTTOM_LEFT) && hitCodes.contains(HIT_TOP_LEFT)) {
+                return HIT_LEFT;
+//            }  else if (hitCodes.contains(HIT_LEFT) && hitCodes.contains(HIT_TOP_LEFT)){
+//                return HIT_LEFT;
+//            } else if (hitCodes.contains(HIT_RIGHT) && hitCodes.contains(HIT_TOP_RIGHT)) {
+//                return HIT_RIGHT;
+//            } else if (hitCodes.contains(HIT_LEFT) && hitCodes.contains(HIT_BOTTOM_LEFT)) {
+//                return HIT_LEFT;
+//            } else if (hitCodes.contains(HIT_RIGHT) && hitCodes.contains(HIT_BOTTOM_RIGHT)){
+//                return HIT_RIGHT;
+//            } else if (hitCodes.contains(HIT_TOP) && hitCodes.contains(HIT_TOP_RIGHT)) {
+//                return HIT_TOP;
+//            } else if (hitCodes.contains(HIT_BOTTOM) && hitCodes.contains(HIT_BOTTOM_LEFT)) {
+//                return HIT_BOTTOM;
+//            } else if (hitCodes.contains(HIT_BOTTOM) && hitCodes.contains(HIT_BOTTOM_RIGHT)) {
+//                return HIT_TOP;
+//            } else if (hitCodes.contains(HIT_TOP) && hitCodes.contains(HIT_TOP_LEFT)) {
+//                return HIT_TOP;
             } else {
                 // Return the first hit code if none of the priority conditions are met
                 return hitCodes.get(0);
