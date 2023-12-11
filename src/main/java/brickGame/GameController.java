@@ -218,6 +218,11 @@ public class GameController implements EventHandler<KeyEvent>, GameEngine.OnActi
                 }
                 isPlaying = !isPlaying; // Toggle the playing state
                 break;
+            case P:
+                gameInitializer.stopEngine();
+                break;
+            case R:
+                gameInitializer.startEngine();
         }
     }
 
