@@ -96,10 +96,20 @@ public class GameInitializer {
         Random random = new Random();
         xBall = random.nextInt(uiController.getSceneWidth()) + 1;
         if(level < 18) {
-            yBall = random.nextInt(uiController.getSceneHeight() - ((level + 1) * Block.getHeight()) - 100) + ((level + 1) * Block.getHeight()) + 15;
-//        yBall = random.nextInt(uiController.getSceneHeight() - 200) + ((level + 1) * Block.getHeight()) + 15;
-        } else {
-            yBall = random.nextInt(uiController.getSceneHeight() - 200) + ((6) * Block.getHeight()) + 15;
+            int minAllowedY = ((level + 1) * Block.getHeight()) + 60;
+            int maxAllowedY = uiController.getSceneHeight() - 90;
+            minAllowedY = Math.max(minAllowedY, Block.getHeight() + 60);
+            yBall = random.nextInt(maxAllowedY - minAllowedY) + minAllowedY;
+        } else if (level == 18) {
+            int minAllowedY = (6 * Block.getHeight()) + 60;
+            int maxAllowedY = uiController.getSceneHeight() - 90;
+            minAllowedY = Math.max(minAllowedY, Block.getHeight() + 60);
+            yBall = random.nextInt(maxAllowedY - minAllowedY) + minAllowedY;
+        } else if (level == 19) {
+            int minAllowedY = (11 * Block.getHeight()) + 60;
+            int maxAllowedY = uiController.getSceneHeight() - 90;
+            minAllowedY = Math.max(minAllowedY, Block.getHeight() + 60);
+            yBall = random.nextInt(maxAllowedY - minAllowedY) + minAllowedY;
         }
         ball = new Circle();
         ball.setRadius(ballRadius);
@@ -170,20 +180,31 @@ public class GameInitializer {
      * Special blocks are added to the blocks list with a transparent color.
      * The decision to generate a special block is based on random conditions.
      */
-    public void initSpecialBoard() {
+    public void initSpecialBoard(int level) {
         int type = Block.BLOCK_SPECIAL;
         boolean shouldGenerateBlock;
+
+        int columnsToGenerate;
+        if (level == 18) {
+            columnsToGenerate = 5;
+        } else if (level == 19) {
+            columnsToGenerate = 10;
+        } else {
+            // Default to 5 columns for other levels
+            columnsToGenerate = 5;
+        }
+
         for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 5; j++) {
+            for (int j = 0; j < columnsToGenerate; j++) {
                 int r = new Random().nextInt(500);
                 shouldGenerateBlock = r % 5 != 0;
-                if(shouldGenerateBlock) {
+                if (shouldGenerateBlock) {
                     blocks.add(new Block(j, i, Color.TRANSPARENT, type));
                 }
             }
         }
-
     }
+
 
     /**
      * Initializes the game engine with the provided OnAction listener and starts the game engine.
@@ -208,6 +229,12 @@ public class GameInitializer {
     public void stopEngine() {
         if (engine != null) {
             engine.stop();
+        }
+    }
+
+    public void startEngine() {
+        if(engine != null) {
+            engine.start();
         }
     }
 
@@ -264,7 +291,7 @@ public class GameInitializer {
     public void initializeSpecialElements(Pane pane) {
         initBall(pane);
         initBreak(pane);
-        initSpecialBoard();
+        initSpecialBoard(level);
         if(!loadFromSave) {
             for (Block block : blocks) {
                 pane.getChildren().add(block.rect);
