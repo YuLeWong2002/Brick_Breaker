@@ -38,7 +38,7 @@ public class GameEngine {
      * @param fps set fps and convert it to millisecond
      */
     public void setFps(int fps) {
-        this.fps = 1000 / fps;
+        this.fps = 800 / fps;
     }
 
     /**
