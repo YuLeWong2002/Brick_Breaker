@@ -8,29 +8,21 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * The main class for the JavaFX application. It serves as the entry point for the
- * application and extends the {@link javafx.application.Application} class.
+ * The {@code Main} class serves as the entry point for the JavaFX application.
+ * It extends {@link javafx.application.Application} and provides the main method
+ * to launch and start the graphical user interface (GUI) of the game.
+ *
+ * <p>The class includes the {@link #start(Stage)} method, where the primary stage
+ * and the game components are initialized and displayed.
+ *
+ * @author [Wong Yu Le]
+ * @version 1.0
  */
 public class Main extends Application {
 
-    /**
-     * Represents the GameInitializer instance associated with the application.
-     * This class is responsible for initializing and managing game-related elements.
-     */
     private static GameInitializer gameInitializer;
-
-    /**
-     * Represents the UIController instance associated with the application.
-     * This class is responsible for managing the user interface and coordinating UI-related functionality.
-     */
     private static UIController uiController;
-
-    /**
-     * Represents the BackgroundMusic instance associated with the application.
-     * This class handles the background music for the game.
-     */
     private static BackgroundMusic backgroundMusic;
-
     public static String savePath    = "D:/save/save.mdds";
     String mediaPath = "src/main/resources/GameMusic.mp3";
     public static Scene scene;
