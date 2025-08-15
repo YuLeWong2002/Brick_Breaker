@@ -20,5 +20,24 @@ The ball bounces off the UI borders and interacts with blocks using precise coll
 ---
 
 ## 📂 Project Structure
-<pre> ```plaintext src/main/java/ ├── BackgroundMusic.java Handles in-game music ├── BallMovement.java Ball movement & collision ├── Block.java Block object definition ├── BlockSerializable.java Block saving/loading ├── Bonus.java Bonus logic ├── GameController.java Game state management ├── GameEngine.java Main game loop ├── GameIOController.java Save/load game data ├── GameInitializer.java Game setup ├── LoadSave.java File handling ├── Main.java Application entry point ├── MainMenuController.java Menu UI controller ├── Penalty.java Penalty logic ├── Score.java Score tracking ├── UIController.java UI rendering └── sample.fxml JavaFX UI layout ``` </pre>
+
+| File/Folder               | Description |
+|---------------------------|-------------|
+| `BackgroundMusic.java`    | Handles in-game music |
+| `BallMovement.java`       | Ball movement & collision |
+| `Block.java`              | Block object definition |
+| `BlockSerializable.java`  | Block saving/loading |
+| `Bonus.java`               | Bonus logic |
+| `GameController.java`     | Game state management |
+| `GameEngine.java`         | Main game loop |
+| `GameIOController.java`   | Save/load game data |
+| `GameInitializer.java`    | Game setup |
+| `LoadSave.java`           | File handling |
+| `Main.java`               | Application entry point |
+| `MainMenuController.java` | Menu UI controller |
+| `Penalty.java`            | Penalty logic |
+| `Score.java`              | Score tracking |
+| `UIController.java`       | UI rendering |
+| `sample.fxml`             | JavaFX UI layout |
+
 
